@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge";
 export type ProfileCardData = {
   id: string;
   name: string;
-  email: string;
   cohort_number?: string;
   connect_url?: string;
   avatar_url?: string;

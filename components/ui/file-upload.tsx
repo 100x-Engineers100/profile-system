@@ -137,7 +137,7 @@ export function FileUpload({
 
       // Call onUploadComplete for each uploaded file
       uploadedUrls.forEach((url) => onUploadComplete(url));
-    } catch (error: any) {
+    }} catch (error: any) {
       console.error("Detailed error:", error);
       toast({
         title: "Error",

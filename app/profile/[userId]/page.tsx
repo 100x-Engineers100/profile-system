@@ -26,23 +26,14 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/auth-context';
 import { supabase } from '@/lib/supabase';
-
-interface ProfileApplication {
-  id: string;
-  screenshot_url?: string[];
-  title: string;
-  description: string;
-  tags?: string[];
-  stars: number;
-  status: "approved" | "pending" | "rejected";
-  live_url?: string;
-}
+import { Application } from '@/types'; // Added missing import for Application type
 
 interface Profile {
   id?: string;
   user_id: string;
   email: string;
   public_email: boolean;
+  avatar_url?: string; // Added missing avatar_url property
   name: string;
   cohort_number?: string;
   password?: string;
@@ -163,9 +154,15 @@ export default function UserProfilePage() {
         if (data && data.length > 0 && data[0].lms_userid) {
           const lmsUserId = data[0].lms_userid;
           try {
+            const edmingleApiKey = process.env.NEXT_PUBLIC_EDMINGLE_API_KEY;
+            if (!edmingleApiKey) {
+              console.error('EDMINGLE_API_KEY is not defined. Cannot call external API.');
+              return; // Prevent the fetch call if API key is missing
+            }
+
             const apiResponse = await fetch(`https://100xengineers-api.edmingle.com/nuSource/api/v1/admin/batches/attendance/${lmsUserId}`, {
               headers: {
-                'apikey': process.env.NEXT_PUBLIC_EDMINGLE_API_KEY, 
+                'apikey': edmingleApiKey, // Now guaranteed to be a string
                 'ORGID': '11240',   
               },
             });
@@ -308,7 +305,7 @@ export default function UserProfilePage() {
                 </Badge>
               )}
               {displayProfile?.open_to_work === "Yes" && ( // Changed from === to ==
-                <Badge variant="success" className="flex items-center gap-1 px-3 py-1 rounded-full bg-green-500 text-white dark:bg-green-600">
+                <Badge variant="default" className="flex items-center gap-1 px-3 py-1 rounded-full bg-green-500 text-white dark:bg-green-600">
                   <CheckCircle className="h-3 w-3" />
                   Open to Work
                 </Badge>
@@ -433,7 +430,7 @@ export default function UserProfilePage() {
                             {app.description}
                           </p>
                           <div className="flex flex-wrap gap-2 mb-3">
-                            {app.tags?.map((tag, index) => (
+                            {app.tags?.map((tag: string, index: number) => (
                               <Badge key={index} className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 text-xs">
                                 {tag}
                               </Badge>
@@ -458,9 +455,9 @@ export default function UserProfilePage() {
                         </div>
                       </Link>
                       <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        {app.live_url && (
+                        {app.url && (
                           <Button variant="outline" size="icon" asChild className="rounded-full bg-white dark:bg-gray-800 shadow-md hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <Link href={app.live_url} target="_blank" rel="noopener noreferrer">
+                            <Link href={app.url} target="_blank" rel="noopener noreferrer">
                               <ExternalLink className="h-4 w-4" />
                             </Link>
                           </Button>
@@ -519,9 +516,9 @@ export default function UserProfilePage() {
                         </div>
                       </Link>
                       <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        {app.live_url && (
+                        {app.url && (
                           <Button variant="outline" size="icon" asChild className="rounded-full bg-white dark:bg-gray-800 shadow-md hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <Link href={app.live_url} target="_blank" rel="noopener noreferrer">
+                            <Link href={app.url} target="_blank" rel="noopener noreferrer">
                               <ExternalLink className="h-4 w-4" />
                             </Link>
                           </Button>
@@ -546,51 +543,3 @@ type ProfileApplication = Application & {
   screenshot_url:string[];
   tags?: string[]; // Add tags property
 };
-
-const dummyApplications: ProfileApplication[] = [
-  {
-    id: "app-1",
-    title: "Dummy App 1",
-    description: "This is a dummy application for testing purposes.",
-    screenshot_url: ["https://via.placeholder.com/400x300?text=Dummy+App+1"],
-    repo_url: "https://github.com/dummy/app1",
-    live_url: "https://dummyapp1.com",
-    status: "approved",
-    created_at: new Date().toISOString(),
-    creator_id: "dummy-profile-id-123",
-    stars: 15,
-    isStarred: false,
-    creator_user_id: "dummyuser",
-    tags: ["web", "react", "supabase"], // Add tags
-  },
-  {
-    id: "app-2",
-    title: "Another Dummy App",
-    description: "A second dummy application to populate the list.",
-    screenshot_url: ["https://via.placeholder.com/400x300?text=Dummy+App+2"],
-    repo_url: "https://github.com/dummy/app2",
-    live_url: "https://dummyapp2.com",
-    status: "pending",
-    created_at: new Date().toISOString(),
-    creator_id: "dummy-profile-id-123",
-    stars: 8,
-    isStarred: true,
-    creator_user_id: "dummyuser",
-    tags: ["mobile", "flutter"], // Add tags
-  },
-  {
-    id: "app-3",
-    title: "Third Dummy App",
-    description: "Yet another dummy application.",
-    screenshot_url: ["https://via.placeholder.com/400x300?text=Dummy+App+3"],
-    repo_url: "https://github.com/dummy/app3",
-    live_url: "https://dummyapp3.com",
-    status: "approved",
-    created_at: new Date().toISOString(),
-    creator_id: "dummy-profile-id-123",
-    stars: 22,
-    isStarred: false,
-    creator_user_id: "dummyuser",
-    tags: ["ai", "python", "ml"], // Add tags
-  },
-];

@@ -7,7 +7,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 
-export function MainNav({isAuthenticated}) {
+export function MainNav({isAuthenticated}: {isAuthenticated: boolean}) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();

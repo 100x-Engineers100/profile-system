@@ -84,7 +84,13 @@ export default function Home() {
 
       try {
         // Replace with your actual deployed semantic-search Edge Function URL
-        const edgeFunctionUrl = process.env.NEXT_PUBLIC_SUPABASE_SEMANTIC_SEARCH_URL; 
+        const edgeFunctionUrl = process.env.NEXT_PUBLIC_SUPABASE_SEMANTIC_SEARCH_URL;
+
+        if (!edgeFunctionUrl) {
+          console.error("NEXT_PUBLIC_SUPABASE_SEMANTIC_SEARCH_URL is not defined.");
+          return;
+        }
+
         const response = await fetch(edgeFunctionUrl, {
           method: "POST",
           headers: {
@@ -118,7 +124,7 @@ export default function Home() {
         const sortedProfilesData = (profilesData || []).sort((a: any, b: any) => {
           const similarityA = similarityMap.get(a.id) || 0;
           const similarityB = similarityMap.get(b.id) || 0;
-          return similarityB - similarityA; // Descending order
+          return Number(similarityB) - Number(similarityA); // Descending order
         });
 
         const formattedResults: ProfileCardData[] = sortedProfilesData.map((profile: any) => ({

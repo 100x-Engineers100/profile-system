@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
-import { ProfileCardData, dummyProfiles } from "@/lib/dummy-data";
+import { ProfileCardData } from "@/lib/dummy-data";
 import { ProfileCard } from "@/components/profile-card";
 
 export default function ProfilesPage() {
@@ -13,7 +13,7 @@ export default function ProfilesPage() {
   useEffect(() => {
     // Simulate fetching data
     setTimeout(() => {
-      setProfiles(dummyProfiles);
+      // setProfiles(dummyProfiles);
       setLoading(false);
     }, 500);
   }, []);

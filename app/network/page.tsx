@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { ProfileCard, ProfileCardData } from '@/components/profile-card';
-import { dummyProfiles } from '@/lib/dummy-data';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';

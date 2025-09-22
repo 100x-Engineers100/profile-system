@@ -224,10 +224,16 @@ export default function ProfilePage() {
       if (profileData && profileData.lms_userid) {
         const lmsUserId = profileData.lms_userid;
         try {
+          const edmingleApiKey = process.env.NEXT_PUBLIC_EDMINGLE_API_KEY;
+          if (!edmingleApiKey) {
+            console.error('EDMINGLE_API_KEY is not defined. Cannot call external API.');
+            return; // Prevent the fetch call if API key is missing
+          }
+
           const apiResponse = await fetch(`https://100xengineers-api.edmingle.com/nuSource/api/v1/admin/batches/attendance/${lmsUserId}`, {
             headers: {
-              'apikey': process.env.NEXT_PUBLIC_EDMINGLE_API_KEY, // Replace with your actual API key
-              'ORGID': '11240',   // Replace with your actual ORG ID
+              'apikey': edmingleApiKey,
+              'ORGID': '11240',  
             },
           });
           if (!apiResponse.ok) {
@@ -737,7 +743,7 @@ export default function ProfilePage() {
                   </Badge>
                 )}
                 {displayProfile?.open_to_work === "Yes" && (
-                  <Badge variant="success" className="flex items-center gap-1 bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200 px-3 py-1 rounded-full">
+                  <Badge variant="default" className="flex items-center gap-1 bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200 px-3 py-1 rounded-full">
                     <CheckCircle className="h-3 w-3" />
                     Open to Work
                   </Badge>
@@ -809,9 +815,9 @@ export default function ProfilePage() {
                   <Label htmlFor="designation" className="text-gray-700 dark:text-gray-300">Designation</Label>
                   <Input
                     id="designation"
-                    value={myProfile.designation || ""}
+                    value={myProfile?.designation || ""}
                     onChange={(e) =>
-                      setMyProfile({ ...myProfile, designation: e.target.value })
+                      setMyProfile({ ...myProfile!, designation: e.target.value })
                     }
                     placeholder="e.g., Software Engineer"
                     className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
@@ -822,10 +828,10 @@ export default function ProfilePage() {
                   <Input
                     id="years_of_experience"
                     type="number"
-                    value={myProfile.years_of_experience || ""}
+                    value={myProfile?.years_of_experience || ""}
                     onChange={(e) =>
                       setMyProfile({
-                        ...myProfile,
+                        ...myProfile!,
                         years_of_experience: e.target.value,
                       })
                     }
@@ -837,9 +843,9 @@ export default function ProfilePage() {
                   <Label htmlFor="location" className="text-gray-700 dark:text-gray-300">Location</Label>
                   <Input
                     id="location"
-                    value={myProfile.location || ""}
+                    value={myProfile?.location || ""}
                     onChange={(e) =>
-                      setMyProfile({ ...myProfile, location: e.target.value })
+                      setMyProfile({ ...myProfile!, location: e.target.value })
                     }
                     placeholder="e.g., San Francisco, CA"
                     className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
@@ -849,9 +855,9 @@ export default function ProfilePage() {
                   <Label htmlFor="study_stream" className="text-gray-700 dark:text-gray-300">Study Stream</Label>
                   <Input
                     id="study_stream"
-                    value={myProfile.study_stream || ""}
+                    value={myProfile?.study_stream || ""}
                     onChange={(e) =>
-                      setMyProfile({ ...myProfile, study_stream: e.target.value })
+                      setMyProfile({ ...myProfile!, study_stream: e.target.value })
                     }
                     placeholder="e.g., Computer Science"
                     className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
@@ -861,9 +867,9 @@ export default function ProfilePage() {
                   <Label htmlFor="linkedIn" className="text-gray-700 dark:text-gray-300">LinkedIn URL</Label>
                   <Input
                     id="linkedIn"
-                    value={myProfile.linkedIn || ""}
+                    value={myProfile?.linkedIn || ""}
                     onChange={(e) =>
-                      setMyProfile({ ...myProfile, linkedIn: e.target.value })
+                      setMyProfile({ ...myProfile!, linkedIn: e.target.value })
                     }
                     placeholder="e.g., https://linkedin.com/in/yourprofile"
                     className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
@@ -873,9 +879,9 @@ export default function ProfilePage() {
                   <Label htmlFor="domain" className="text-gray-700 dark:text-gray-300">Domain</Label>
                   <Input
                     id="domain"
-                    value={myProfile.domain || ""}
+                    value={myProfile?.domain || ""}
                     onChange={(e) =>
-                      setMyProfile({ ...myProfile, domain: e.target.value })
+                      setMyProfile({ ...myProfile!, domain: e.target.value })
                     }
                     placeholder="e.g., Web Development"
                     className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
@@ -885,10 +891,10 @@ export default function ProfilePage() {
                   <Label htmlFor="industry_interest" className="text-gray-700 dark:text-gray-300">Industry Interest</Label>
                   <Input
                     id="industry_interest"
-                    value={myProfile.industry_interest || ""}
+                    value={myProfile?.industry_interest || ""}
                     onChange={(e) =>
                       setMyProfile({
-                        ...myProfile,
+                        ...myProfile!,
                         industry_interest: e.target.value,
                       })
                     }
@@ -900,10 +906,10 @@ export default function ProfilePage() {
                   <Label htmlFor="interest_areas" className="text-gray-700 dark:text-gray-300">Interest Areas</Label>
                   <Input
                     id="interest_areas"
-                    value={myProfile.interest_areas || ""}
+                    value={myProfile?.interest_areas || ""}
                     onChange={(e) =>
                       setMyProfile({
-                        ...myProfile,
+                        ...myProfile!,
                         interest_areas: e.target.value,
                       })
                     }
@@ -916,9 +922,9 @@ export default function ProfilePage() {
                 <Label htmlFor="public-email" className="text-gray-700 dark:text-gray-300">Public Email</Label>
                 <Switch
                   id="public-email"
-                  checked={myProfile.public_email || false}
+                  checked={myProfile?.public_email || false}
                   onCheckedChange={(checked) =>
-                    setMyProfile({ ...myProfile, public_email: checked })
+                    setMyProfile({ ...myProfile!, public_email: checked })
                   }
                 />
               </div>
@@ -926,9 +932,9 @@ export default function ProfilePage() {
                 <Label htmlFor="open-to-work" className="text-gray-700 dark:text-gray-300">Open to Work</Label>
                 <Switch
                   id="open-to-work"
-                  checked={myProfile.open_to_work === "Yes"}
+                  checked={myProfile?.open_to_work === "Yes"}
                   onCheckedChange={(checked) =>
-                    setMyProfile({ ...myProfile, open_to_work: checked ? "Yes" : "No" })
+                    setMyProfile({ ...myProfile!, open_to_work: checked ? "Yes" : "No" })
                   }
                 />
               </div>
@@ -940,9 +946,9 @@ export default function ProfilePage() {
                 <Label htmlFor="bio" className="text-gray-700 dark:text-gray-300">Bio</Label>
                 <Textarea
                   id="bio"
-                  value={myProfile.bio || ""}
+                  value={myProfile?.bio || ""}
                   onChange={(e) =>
-                    setMyProfile({ ...myProfile, bio: e.target.value })
+                    setMyProfile({ ...myProfile!, bio: e.target.value })
                   }
                   placeholder="Tell us about yourself..."
                   rows={5}
@@ -957,9 +963,9 @@ export default function ProfilePage() {
                 <Label htmlFor="skills" className="text-gray-700 dark:text-gray-300">Skills (comma-separated)</Label>
                 <Input
                   id="skills"
-                  value={myProfile.skills || ""}
+                  value={myProfile?.skills || ""}
                   onChange={(e) =>
-                    setMyProfile({ ...myProfile, skills: e.target.value })
+                    setMyProfile({ ...myProfile!, skills: e.target.value })
                   }
                   placeholder="e.g., React, Node.js, Python"
                   className="bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
