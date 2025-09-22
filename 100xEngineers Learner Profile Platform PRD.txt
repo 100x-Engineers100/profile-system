@@ -1,0 +1,348 @@
+100xEngineers Learner Profile Platform
+PRD
+
+👍 Approvals
+ROLE
+
+TEAMMATE
+
+REVIEWED
+
+STATUS
+
+Product
+
+@Name
+
+MM/DD/YY
+
+Pending
+
+Engineering
+
+@Name
+
+MM/DD/YY
+
+Pending
+
+UX
+
+@Name
+
+MM/DD/YY
+
+Pending
+
+Legal
+
+@Name
+
+MM/DD/YY
+
+Pending
+
+📝 Abstract
+A centralized profile platform for 100xEngineers cohort learners that enables peer-to-peer
+discovery, project showcase, and controlled external talent visibility. The platform integrates
+learner profiles with their projects, provides AI-powered search capabilities, and offers
+role-based access to progress data while maintaining high security standards.
+
+🎯 Business Objectives
+
+• Enable better peer networking and collaboration within and across cohorts ​
+• Increase external visibility for learners to attract recruiters, investors, and partners ​
+• Provide mentors with comprehensive mentee progress visibility ​
+• Improve cohort completion rates through peer motivation and progress transparency ​
+• Generate qualified external interest and partnership opportunities for 100xEngineers
+
+📊 KPI
+
+GOAL
+
+METRIC
+
+QUESTION
+
+Platform
+Engagement
+
+Daily Active Users
+
+How many learners use the platform daily
+
+Peer Discovery
+
+Searches per
+User
+
+Are learners effectively finding peers
+
+External Interest
+
+Contact Requests
+
+How many external inquiries are we
+generating
+
+🏆 Success Criteria
+• 80% of learners complete their profiles within first week ​
+• Average 5+ searches per active user per week ​
+• 50+ meaningful peer connections made in first month ​
+• 10+ qualified external contact requests routed through team ​
+• Mentors actively monitoring mentee progress weekly
+
+🚶‍♀️ User Journeys
+
+Learner Journey: Signs in with credentials → Views own progress dashboard → Updates
+profile with new skills/projects → Searches for peers with similar interests → Connects for
+collaboration → Submits new project to showcase
+Mentor Journey: Logs in → Reviews mentee progress across cohort → Identifies learners
+needing support → Provides targeted guidance based on progress data
+External Audience Journey: Discovers talent through 100xEngineers → Views public
+project showcase → Requests connection through team → Team facilitates appropriate
+introductions
+
+📖 Scenarios
+
+• Learner searching for React developers in their cohort for a team project ​
+• Mentor identifying learners with low assignment completion rates ​
+• External recruiter discovering AI/ML talent through project showcase ​
+• Cross-cohort learner finding potential co-founders with complementary skills ​
+• Investor exploring innovative projects from recent graduates
+
+🕹️ User Flow
+
+Happy Path: Login → Dashboard (role-specific) → Profile/Progress View → Search/Browse
+→ Connect/Contact → Project Submission/View
+Key Alternatives:
+• External users → Public project showcase → Contact team → Team facilitates connection
+• Mentors → Cohort overview → Individual mentee drill-down → Progress tracking
+
+🧰 Functional Requirements
+SECTION
+
+SUB-SECTI
+ON
+
+USER STORY & EXPECTED BEHAVIORS
+
+SCREEN
+S
+
+Authentication
+
+Credential
+Login
+
+User enters provided credentials, system
+validates, redirects to dashboard
+
+TBD
+
+Dashboard
+
+Learner View
+
+Shows personal progress, recent activity,
+peer suggestions
+
+TBD
+
+Dashboard
+
+Mentor View
+
+Shows all mentees, progress summaries,
+alerts for low engagement
+
+TBD
+
+Profile
+
+View Own
+
+Learner sees complete profile with edit
+options
+
+TBD
+
+Profile
+
+View Others
+
+Shows public profile info, projects, domains,
+interests
+
+TBD
+
+Search
+
+AI-Powered
+
+Natural language search across profiles,
+skills, projects
+
+TBD
+
+Projects
+
+Showcase
+
+Public display of all projects with learner
+connections
+
+TBD
+
+Projects
+
+Submission
+
+Learners submit projects with metadata,
+links to profiles
+
+TBD
+
+External
+Access
+
+Contact
+Routing
+
+External users request connections, routed
+to 100xEngineers team
+
+TBD
+
+📐 Model Requirements
+SPECIFICATION
+
+REQUIREMENT
+
+RATIONALE
+
+Open vs Proprietary
+
+Open Source (Sentence
+Transformers)
+
+3-day timeline, cost constraints
+
+Context Window
+
+512 tokens
+
+Profile and project search use
+case
+
+Modalities
+
+Text only
+
+MVP scope, timeline constraints
+
+Fine Tuning
+Capability
+
+Not needed
+
+Generic search sufficient for V1
+
+Latency
+
+<2s P95
+
+Interactive search experience
+
+Parameters
+
+Small model (<1B)
+
+Fast inference on limited
+infrastructure
+
+🧮 Data Requirements
+• Purpose: Semantic search across learner profiles, skills, and projects
+• Preparation: Clean and structure existing Launchpad data, project submissions
+• Sources: Launchpad forms, LMS API, existing project database
+• Coverage: All 500 learners, their domains, interests, skill levels, project metadata
+• Ongoing Collection: Real-time sync with project submissions, profile updates
+
+💬 Prompt Requirements
+
+• Search Enhancement: Convert natural language queries to structured search parameters
+• Privacy Compliance: Never expose personal identifiable information in results ​
+• Result Formatting: Return structured data matching frontend expectations ​
+• Fallback Handling: Graceful degradation when AI search fails to keyword search
+
+🧪 Testing & Measurement
+
+• Offline Evaluation: Test search relevance with sample queries against known good results
+• A/B Testing: Not feasible in 3-day timeline, launch with monitoring ​
+• Performance Monitoring: Track search latency, success rates, user engagement ​
+• Rollback Plan: Fall back to basic keyword search if AI search fails
+
+⚠️ Risks & Mitigations
+RISK
+
+MITIGATION
+
+4-day timeline too aggressive
+
+Leverage existing project showcase app
+maximally
+
+LMS API integration complexity
+
+Take help from the Edmingle support team
+
+AI search implementation time
+
+Start with basic keyword search, add AI later
+
+Data security breach
+
+Use unique IDs only, no PII in database
+
+Low user adoption
+
+Pre-populate profiles, provide clear value props
+
+💰 Costs
+
+• Development: 3 days × 1-2 developers (internal cost) ​
+• Infrastructure: Minimal hosting costs for web application ​
+• AI/Search: Open source models, no API costs ​
+• Data Storage: Existing database infrastructure
+
+🔗 Assumptions & Dependencies
+
+• Existing project showcase app can be extended rather than rebuilt ​
+• LMS API documentation is sufficient for required integrations​
+• Launchpad data is clean and structured for import (Done manually last week)​
+• Team can create 500 user accounts and distribute credentials in timeline ​
+• Basic web hosting infrastructure is available ​
+• External users will accept routing through 100xEngineers team
+
+🔒 Compliance/Privacy/Legal
+
+• Data Minimization: Use unique learner IDs (100xC[batch][number]) instead of personal
+data​
+• Access Controls: Role-based permissions (learners see own data, mentors see mentees)
+• External Access: All external contact routed through 100xEngineers team ​
+• Data Retention: TBD based on organizational policies
+
+📣 GTM/Rollout Plan
+
+Day 1-3: Core development with full LMS integration ​
+Day 4: Feature completion and integration testing​
+Day 5: Testing, bug fixes, credential distribution, launch ​
+Week 1: Monitor adoption, gather feedback, iterate ​
+Week 2-4: Feature refinement, external outreach for hiring/investment opportunities
+Launch Strategy:
+• Email credentials to all 500 learners and mentors ​
+• Demo session for mentors on progress tracking features​
+• Learner onboarding guide for profile completion ​
+• Gradual external audience introduction through team
+
+
