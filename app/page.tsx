@@ -84,10 +84,10 @@ export default function Home() {
 
       try {
         // Replace with your actual deployed semantic-search Edge Function URL
-        const edgeFunctionUrl = process.env.NEXT_PUBLIC_SUPABASE_SEMANTIC_SEARCH_URL;
+        const edgeFunctionUrl = process.env.NEXT_PUBLIC_SUPABASE_HYBRID_SEARCH_URL;
 
         if (!edgeFunctionUrl) {
-          console.error("NEXT_PUBLIC_SUPABASE_SEMANTIC_SEARCH_URL is not defined.");
+          console.error("NEXT_PUBLIC_SUPABASE_HYBRID_SEARCH_URL is not defined.");
           return;
         }
 
@@ -97,7 +97,10 @@ export default function Home() {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}` 
           },
-          body: JSON.stringify({ query: searchQuery }),
+          body: JSON.stringify({
+            query: searchQuery,
+            llm_config: {enabled:true}
+          }),
         });
 
         if (!response.ok) {
@@ -105,8 +108,8 @@ export default function Home() {
         }
 
         const data = await response.json();
-        const profileIdsWithSimilarity = data.results.map((item: any) => ({ profile_id: item.profile_id, similarity: item.similarity }));
-        const profileIds = profileIdsWithSimilarity.map((item: any) => item.profile_id);
+        const profileIdsWithScores = data.map((item: any) => ({ profile_id: item.id || item.profile_id, score: item.semantic_similarity || item.score }));
+        const profileIds = profileIdsWithScores.map((item: any) => item.profile_id);
 
         const { data: profilesData, error: profilesError } = await supabase
           .from("profiles")
@@ -117,14 +120,14 @@ export default function Home() {
           throw profilesError;
         }
 
-        // Create a map for quick lookup of similarity scores
-        const similarityMap = new Map(profileIdsWithSimilarity.map((item: any) => [item.profile_id, item.similarity]));
+        // Create a map for quick lookup of scores
+        const scoreMap = new Map(profileIdsWithScores.map((item: any) => [item.profile_id, item.score]));
 
-        // Sort profilesData by similarity in descending order
+        // Sort profilesData by score in descending order
         const sortedProfilesData = (profilesData || []).sort((a: any, b: any) => {
-          const similarityA = similarityMap.get(a.id) || 0;
-          const similarityB = similarityMap.get(b.id) || 0;
-          return Number(similarityB) - Number(similarityA); // Descending order
+          const scoreA = scoreMap.get(a.id) || 0;
+          const scoreB = scoreMap.get(b.id) || 0;
+          return Number(scoreB) - Number(scoreA); // Descending order
         });
 
         const formattedResults: ProfileCardData[] = sortedProfilesData.map((profile: any) => ({

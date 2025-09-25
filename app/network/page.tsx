@@ -8,61 +8,67 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/lib/supabase';
 
 export default function NetworkPage() {
+  const [allProfiles, setAllProfiles] = useState<ProfileCardData[]>([]);
+  const [displayedProfiles, setDisplayedProfiles] = useState<ProfileCardData[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [selectedCohort, setSelectedCohort] = useState<string>('all');
-  const [profiles, setProfiles] = useState<ProfileCardData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'members' | 'mentors'>('members');
+  const [activeTab, setActiveTab] = useState<string>('members');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
-    const fetchProfiles = async () => {
+    const fetchAllProfiles = async () => {
       setLoading(true);
-      let query = supabase.from('profiles').select('id, name, avatar_url, cohort_number, track, bio, skills, designation, years_of_experience, location');
-
-      if (selectedCohort !== 'all') {
-        query = query.eq('cohort_number', selectedCohort);
-      }
-
-      if (activeTab === 'mentors') {
-        // query = query.eq('role', 'mentor');
-      } else if (activeTab === 'members') {
-        // query = query.eq('role', 'member');
-      }
-
-      if (searchQuery) {
-        query = query.ilike('name', `%${searchQuery}%`);
-      }
-
-      const { data, error } = await query;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, name, avatar_url, cohort_number, track, bio, skills, designation, years_of_experience, location');
 
       if (error) {
-        console.error('Error fetching profiles:', error);
-        setProfiles([]);
+        console.error('Error fetching all profiles:', error);
+        setAllProfiles([]);
       } else {
-        setProfiles(data as ProfileCardData[]);
+        setAllProfiles(data as ProfileCardData[]);
       }
       setLoading(false);
     };
 
-    fetchProfiles();
-  }, [selectedCohort]);
+    fetchAllProfiles();
+  }, []); // Empty dependency array means this runs once on mount
+
+  // Filter profiles whenever selectedCohort, searchQuery, or activeTab changes
+  useEffect(() => {
+    let filtered = allProfiles;
+
+    if (selectedCohort !== 'all') {
+      filtered = filtered.filter(profile => profile.cohort_number === selectedCohort);
+    }
+
+    if (searchQuery) {
+      filtered = filtered.filter(profile => profile.name?.toLowerCase().includes(searchQuery.toLowerCase()));
+    }
+
+    // Apply activeTab filter
+    if (activeTab === 'mentors') {
+      filtered = filtered.filter(profile => profile.designation === 'mentor');
+    } else if (activeTab === 'members') {
+      filtered = filtered.filter(profile => profile.designation !== 'mentor');
+    }
+
+    setDisplayedProfiles(filtered);
+  }, [allProfiles, selectedCohort, searchQuery, activeTab]);
 
   const cohorts = useMemo(() => {
     const uniqueCohorts = new Set<string>();
-    profiles.forEach(profile => {
+    allProfiles.forEach(profile => {
       if (profile.cohort_number) {
-              uniqueCohorts.add(profile.cohort_number);
-            }
+        uniqueCohorts.add(profile.cohort_number);
+      }
     });
     return ['all', ...Array.from(uniqueCohorts).sort()];
-  }, [profiles]);
+  }, [allProfiles]);
 
   const filteredProfiles = useMemo(() => {
-    if (selectedCohort === 'all') {
-      return profiles;
-    }
-    return profiles.filter(profile => profile.cohort_number === selectedCohort);
-  }, [selectedCohort, profiles]);
+    return displayedProfiles;
+  }, [displayedProfiles]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
@@ -77,12 +83,12 @@ export default function NetworkPage() {
             >
               Members
             </button>
-            <button
+            {/* <button
               className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${activeTab === 'mentors' ? 'bg-orange-500 text-white shadow-md' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
               onClick={() => setActiveTab('mentors')}
             >
               Mentors
-            </button>
+            </button> */}
             <Select onValueChange={setSelectedCohort} value={selectedCohort}>
               <SelectTrigger id="cohort-filter" className="w-[180px] rounded-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
                 <SelectValue placeholder="All Cohorts" />
@@ -138,8 +144,8 @@ export default function NetworkPage() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProfiles.map(profile => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {displayedProfiles.map(profile => (
               <ProfileCard key={profile.id} profile={profile} />
             ))}
           </div>

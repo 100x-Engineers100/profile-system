@@ -123,7 +123,7 @@ export default function ProfilePage() {
   const [likedApplications, setLikedApplications] = useState<
     ProfileApplication[]
   >([]);
-  const [activeMainTab, setActiveMainTab] = useState<"applications" | "progress">("applications");
+  const [activeMainTab, setActiveMainTab] = useState<"applications" | "progress" | "analytics">("applications");
   const [activeApplicationTab, setActiveApplicationTab] = useState<"my" | "liked">("my");
   const [responses, setResponses] = useState<any[]>([]);
   const [overallAttendancePercentage, setOverallAttendancePercentage] = useState<number | null>(null);
@@ -739,7 +739,7 @@ export default function ProfilePage() {
                 {displayProfile?.cohort_number && (
                   <Badge variant="secondary" className="flex items-center gap-2 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-3 py-1 rounded-full">
                     <Users className="h-4 w-4" />
-                    Cohort {displayProfile.cohort_number}
+                    {displayProfile.cohort_number}
                   </Badge>
                 )}
                 {displayProfile?.open_to_work === "Yes" && (
@@ -1027,7 +1027,7 @@ export default function ProfilePage() {
 
               <Card className="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
                 <Tabs defaultValue="applications" className="w-full">
-                  <TabsList className="grid w-fit grid-cols-2 bg-gray-100 dark:bg-gray-700 rounded-lg px-1">
+                  <TabsList className="grid w-fit grid-cols-3 bg-gray-100 dark:bg-gray-700 rounded-lg px-1">
                     <TabsTrigger
                       value="applications"
                       onClick={() => setActiveMainTab("applications")}
@@ -1042,25 +1042,16 @@ export default function ProfilePage() {
                     >
                       Progress
                     </TabsTrigger>
+                     <TabsTrigger
+                      value="analytics"
+                      onClick={() => setActiveMainTab("analytics")}
+                      className="data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-orange-600 dark:data-[state=active]:text-white rounded-md px-4 py-2 text-base font-medium transition-all"
+                    >
+                      Analytics
+                    </TabsTrigger>
                   </TabsList>
                   <TabsContent value="applications" className="mt-6">
                     <Tabs defaultValue="my" className="w-full">
-                      <TabsList className="grid w-fit grid-cols-2 bg-gray-100 dark:bg-gray-700 rounded-lg px-1">
-                        <TabsTrigger
-                          value="my"
-                          onClick={() => setActiveApplicationTab("my")}
-                          className="data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-orange-600 dark:data-[state=active]:text-white rounded-md px-4 py-2 text-base font-medium transition-all"
-                        >
-                          My Applications
-                        </TabsTrigger>
-                        <TabsTrigger
-                          value="liked"
-                          onClick={() => setActiveApplicationTab("liked")}
-                          className="data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-orange-600 dark:data-[state=active]:text-white rounded-md px-4 py-2 text-base font-medium transition-all"
-                        >
-                          Liked
-                        </TabsTrigger>
-                      </TabsList>
                       <TabsContent value="my" className="mt-6">
                         {myApplications.length > 0 ? (
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1113,19 +1104,11 @@ export default function ProfilePage() {
                       <p className="text-center text-gray-500 dark:text-gray-400 py-12 text-lg">No progress data available.</p>
                     )}
                   </TabsContent>
-                </Tabs>
-              </Card>
-            </div>
-
-            <div className="lg:col-span-1 space-y-6">
-              {(overallAttendancePercentage ||
+                  <TabsContent value="analytics" className="mt-6">
+                    {(overallAttendancePercentage ||
                 displayProfile?.completion_rate ||
                 displayProfile?.assignments_submitted) && (
                 <Card className="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <BarChart className="h-6 w-6 mr-3 text-orange-500" />
-                    Analytics
-                  </h2>
                   {overallAttendancePercentage !== null && (
                     <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
                       <p className="text-gray-700 dark:text-gray-300 flex items-center gap-2">
@@ -1169,6 +1152,9 @@ export default function ProfilePage() {
                   )}
                 </Card>
               )}
+                  </TabsContent>
+                </Tabs>
+              </Card>
             </div>
           </div>
           )}

@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Link as LinkIcon, Briefcase, Code } from "lucide-react";
+import { User, Link as LinkIcon, Briefcase, Code, Users } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 
@@ -40,7 +40,7 @@ export function ProfileCard({ profile }: { profile: ProfileCardData }) {
             >
               <Button variant="outline" size="sm" className="mt-2">
                 <LinkIcon className="h-4 w-4 mr-2" />
-                Connect
+                View Profile 
               </Button>
             </a>
           {/* )} */}
@@ -65,6 +65,12 @@ export function ProfileCard({ profile }: { profile: ProfileCardData }) {
             <p className="text-sm text-muted-foreground mb-2 line-clamp-1 text-gray-600 dark:text-gray-400">
               {profile.background} {profile.years_of_experience ? `• ${profile.years_of_experience} years` : ''}
             </p>
+          )}
+           {profile.cohort_number && (
+            <Badge variant="secondary" className="flex items-center gap-2 mb-1 w-fit text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700">
+              <Users className="h-3 w-3" />
+              {profile.cohort_number}
+            </Badge>
           )}
         </div>
       </Card>

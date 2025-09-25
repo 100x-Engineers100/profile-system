@@ -268,13 +268,33 @@ export default function UserProfilePage() {
               <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white">
                 {displayProfile?.name || displayProfile?.email?.split("@")[0]}
               </h1>
-              {displayProfile?.linkedIn && (
-                <Link href={displayProfile.linkedIn} target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" size="sm" className="mt-2 md:mt-0 rounded-full border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    LinkedIn
-                  </Button>
-                </Link>
+              {loggedInUserProfile && loggedInUserProfile.id !== displayProfile?.id && (
+                <>
+                  {loggedInUserProfile?.role === 'user' && displayProfile?.linkedIn &&
+                   !['https://linkedin.com', 'http://linkedin.com'].includes(displayProfile.linkedIn.toLowerCase()) &&
+                   displayProfile.linkedIn.length > 'https://linkedin.com'.length ? (
+                    <Link href={displayProfile.linkedIn.startsWith('http') ? displayProfile.linkedIn : `https://${displayProfile.linkedIn}`} target="_blank" rel="noopener noreferrer">
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="mt-2 md:mt-0 rounded-full bg-orange-500 text-white hover:bg-orange-600"
+                      >
+                        Connect
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="mt-2 md:mt-0 rounded-full bg-orange-500 text-white hover:bg-orange-600"
+                      onClick={() => {
+                        window.location.href = 'mailto:example@example.com?subject=Connect%20Request';
+                      }}
+                    >
+                      Connect
+                    </Button>
+                  )}
+                </>
               )}
             </div>
             <div className="flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-2 text-gray-600 dark:text-gray-400 text-base">
@@ -301,7 +321,7 @@ export default function UserProfilePage() {
               {displayProfile?.cohort_number && (
                 <Badge variant="secondary" className="flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
                   <Users className="h-4 w-4" />
-                  Cohort {displayProfile.cohort_number}
+                  {displayProfile.cohort_number}
                 </Badge>
               )}
               {displayProfile?.open_to_work === "Yes" && ( // Changed from === to ==
@@ -364,33 +384,14 @@ export default function UserProfilePage() {
       )
       }
 
-      {/* Analytics Section (Conditional) */}
-        {(user?.id === userId || loggedInUserProfile?.role === 'admin') && (
-        <Card className="p-6 mb-6 bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md">
-          <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Analytics</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="flex flex-col items-center justify-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
-                <span className="text-5xl font-extrabold text-orange-500">{displayProfile?.completion_rate}%</span>
-                <span className="text-lg text-gray-600 dark:text-gray-400 mt-2">Completion Rate</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
-                <span className="text-5xl font-extrabold text-orange-500">{overallAttendancePercentage !== null ? `${overallAttendancePercentage}%` : 'N/A'}</span>
-                <span className="text-lg text-gray-600 dark:text-gray-400 mt-2">Attendance Rate</span>
-              </div>
-              <div className="flex flex-col items-center justify-center p-6 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
-                <span className="text-5xl font-extrabold text-orange-500">{displayProfile?.assignments_submitted}</span>
-                <span className="text-lg text-gray-600 dark:text-gray-400 mt-2">Assignments Submitted</span>
-              </div>
-            </div>
-          </Card>
-        )}
-
         {/* Applications Section */}
+        {
+          myApplications.length ? (
         <Card className="p-6 bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md">
           <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Applications</h3>
           <div className="flex space-x-4 mb-6">
             <Tabs defaultValue="my" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-gray-700 rounded-full p-1">
+              {/* <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-gray-700 rounded-full p-1">
                 <TabsTrigger
                   value="my"
                   className={`rounded-full text-sm font-medium transition-all duration-200 ${activeTab === 'my' ? 'bg-orange-500 text-white shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
@@ -405,7 +406,7 @@ export default function UserProfilePage() {
                 >
                   Liked Applications
                 </TabsTrigger>
-              </TabsList>
+              </TabsList> */}
               <TabsContent value="my" className="mt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {(activeTab === "my" ? myApplications : likedApplications).map((app) => (
@@ -531,6 +532,8 @@ export default function UserProfilePage() {
             </Tabs>
           </div>
         </Card>
+          ) : (<></>)
+        }
       </div>
     </div>
   );
