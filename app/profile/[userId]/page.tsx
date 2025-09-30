@@ -39,6 +39,8 @@ interface Profile {
   password?: string;
   bio?: string;
   skills?: string;
+  portfolio_link?: string;
+  github_link?: string;
   designation?: string;
   years_of_experience?: string;
   location?: string;
@@ -150,9 +152,27 @@ export default function UserProfilePage() {
           )
           .eq("id", userId);
 
+        const profilesData: Profile[] = data as Profile[];
+
+        // Fetch mentee_details if open_to_work is "yes"
+        if (profilesData && profilesData.length > 0 && profilesData[0].open_to_work?.toLowerCase() === "yes" && profilesData[0].email) {
+          const { data: menteeData, error: menteeError } = await supabase
+            .from("mentee_details")
+            .select("portfolio_link, github_link")
+            .eq("email", profilesData[0].email)
+            .single();
+
+          if (menteeError) {
+            console.error("Error fetching mentee details:", menteeError);
+          } else if (menteeData && profilesData[0]) {
+            profilesData[0].portfolio_link = menteeData.portfolio_link;
+            profilesData[0].github_link = menteeData.github_link;
+          }
+        }
+
         // Call the external API if lms_userid is present
-        if (data && data.length > 0 && data[0].lms_userid) {
-          const lmsUserId = data[0].lms_userid;
+        if (profilesData && profilesData.length > 0 && profilesData[0].lms_userid) {
+          const lmsUserId = profilesData[0].lms_userid;
           try {
             const edmingleApiKey = process.env.NEXT_PUBLIC_EDMINGLE_API_KEY;
             if (!edmingleApiKey) {
@@ -324,16 +344,32 @@ export default function UserProfilePage() {
                   {displayProfile.cohort_number}
                 </Badge>
               )}
-              {displayProfile?.open_to_work === "Yes" && ( // Changed from === to ==
+              {displayProfile?.open_to_work?.toLowerCase() === "yes" && (
                 <Badge variant="default" className="flex items-center gap-1 px-3 py-1 rounded-full bg-green-500 text-white dark:bg-green-600">
                   <CheckCircle className="h-3 w-3" />
                   Open to Work
                 </Badge>
               )}
-              {displayProfile?.open_to_work === "Yes" && displayProfile?.resume && (
+              {displayProfile?.open_to_work?.toLowerCase() === "yes" && displayProfile?.portfolio_link && (
                 <Badge variant="secondary" className="flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">
                   <FileText className="h-4 w-4" />
-                  <a href={displayProfile.resume} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                  <a href={displayProfile.portfolio_link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline" style={{textDecoration:'none'}}>
+                    Portfolio
+                  </a>
+                </Badge>
+              )}
+              {displayProfile?.open_to_work?.toLowerCase() === "yes" && displayProfile?.github_link && (
+                <Badge variant="secondary" className="flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">
+                  <Code className="h-4 w-4" />
+                  <a href={displayProfile.github_link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline" style={{textDecoration:'none'}}>
+                    GitHub
+                  </a>
+                </Badge>
+              )}
+               {displayProfile?.open_to_work?.toLowerCase() === "yes" && displayProfile?.portfolio_link && (
+                <Badge variant="secondary" className="flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">
+                  <FileText className="h-4 w-4" />
+                  <a href={displayProfile.resume} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline" style={{textDecoration:'none'}}>
                     View Resume
                   </a>
                 </Badge>

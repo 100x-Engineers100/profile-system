@@ -1,34 +1,21 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ProfileCard } from "@/components/profile-card";
 import { ProfileCardData } from "@/lib/dummy-data";
 import {
-  Building2,
-  Code2,
-  Rocket,
   Star,
-  Users,
   ArrowRight,
   ChevronRight,
-  Mail,
-  Download,
-  MessageSquare,
-  TrendingUp,
-  Youtube,
-  Instagram,
-  Sparkles,
   ChevronLeft,
-  Play,
   Search,
 } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import Image from "next/image";
-import { getFirstScreenshotUrl } from "@/lib/image-utils";
 import { getVideoEmbedInfo, getVideoPlatformName } from "@/lib/video-utils";
 import { VideoPlayer } from "@/components/ui/video-player";
 import OpenAI from "openai";
@@ -79,11 +66,10 @@ export default function Home() {
   const handleSearch = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && searchQuery.trim() !== "") {
       setSearchLoading(true);
-      setShowProfiles(false); // Hide dummy profiles when performing a real search
-      setSearchResults([]); // Clear previous results
+      setShowProfiles(false);
+      setSearchResults([]); 
 
       try {
-        // Replace with your actual deployed semantic-search Edge Function URL
         const edgeFunctionUrl = process.env.NEXT_PUBLIC_SUPABASE_HYBRID_SEARCH_URL;
 
         if (!edgeFunctionUrl) {

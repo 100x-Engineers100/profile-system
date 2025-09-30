@@ -70,9 +70,9 @@ type Profile = {
   open_to_work?: string;
   house?: string;
   interests?: string[];
-  github_url?: string;
+  github_link?: string;
   linkedin_url?: string;
-  portfolio_url?: string;
+  portfolio_link?: string;
   batch_name?: string;
   attendance_rate?: number;
   completion_rate?: number;
@@ -214,11 +214,29 @@ export default function ProfilePage() {
       // Fetch user's profile to get lms_userid
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
-        .select("lms_userid")
+        .select("lms_userid, open_to_work, email") // Added open_to_work and email
         .eq("id", profile.id)
         .single();
 
       if (profileError) throw profileError;
+
+      // Fetch mentee_details if open_to_work is "yes"
+      if (profileData.open_to_work?.toLowerCase() === "yes" && profileData.email) {
+        const { data: menteeData, error: menteeError } = await supabase
+          .from("mentee_details")
+          .select("portfolio_link, github_link")
+          .eq("email", profileData.email)
+          .single();        
+
+        if (menteeError) {
+        } else if (menteeData) {
+          setMyProfile(prevProfile => ({
+            ...prevProfile!,
+            portfolio_link: menteeData.portfolio_link,
+            github_link: menteeData.github_link,
+          }));
+        }
+      }
 
       // Call the external API if lms_userid is present
       if (profileData && profileData.lms_userid) {
@@ -347,9 +365,9 @@ export default function ProfilePage() {
           bio: myProfile?.bio,
           skills: myProfile?.skills,
           interests: myProfile?.interests,
-          github_url: myProfile?.github_url,
+          github_link: myProfile?.github_link,
           linkedin_url: myProfile?.linkedin_url,
-          portfolio_url: myProfile?.portfolio_url,
+          portfolio_link: myProfile?.portfolio_link,
           batch_name: myProfile?.batch_name,
           attendance_rate: myProfile?.attendance_rate,
           completion_rate: myProfile?.completion_rate,
@@ -742,16 +760,32 @@ export default function ProfilePage() {
                     {displayProfile.cohort_number}
                   </Badge>
                 )}
-                {displayProfile?.open_to_work === "Yes" && (
+                {displayProfile?.open_to_work?.toLowerCase() === "yes" && (
                   <Badge variant="default" className="flex items-center gap-1 bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200 px-3 py-1 rounded-full">
                     <CheckCircle className="h-3 w-3" />
                     Open to Work
                   </Badge>
                 )}
-                {displayProfile?.open_to_work === "Yes" && displayProfile?.resume && (
+                {displayProfile?.open_to_work?.toLowerCase() === "yes" && displayProfile?.portfolio_link && (
+                  <Badge variant="secondary" className="flex items-center gap-2 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">
+                    <FileText className="h-4 w-4" />
+                    <a href={displayProfile.portfolio_link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline" style={{textDecoration:"none"}}>
+                      Portfolio
+                    </a>
+                  </Badge>
+                )}
+                {displayProfile?.open_to_work?.toLowerCase() === "yes" && displayProfile?.github_link && (
+                  <Badge variant="secondary" className="flex items-center gap-2 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">
+                    <Code className="h-4 w-4" />
+                    <a href={displayProfile.github_link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline"  style={{textDecoration:"none"}}>
+                      GitHub
+                    </a>
+                  </Badge>
+                )}
+                {displayProfile?.open_to_work?.toLowerCase() === "yes" && displayProfile?.resume && (
                   <Badge variant="secondary" className="flex items-center gap-2 bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200 px-3 py-1 rounded-full">
                     <FileText className="h-4 w-4" />
-                    <a href={displayProfile.resume} target="_blank" rel="noopener noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+                    <a href={displayProfile.resume} target="_blank" rel="noopener noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline"  style={{textDecoration:"none"}}>
                       View Resume
                     </a>
                   </Badge>
