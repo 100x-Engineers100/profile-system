@@ -106,17 +106,15 @@ export default function Home() {
           throw profilesError;
         }
 
-        // Create a map for quick lookup of scores
-        const scoreMap = new Map(profileIdsWithScores.map((item: any) => [item.profile_id, item.score]));
+        // Create a map for quick lookup of profiles by ID
+        const profilesMap = new Map(profilesData.map((profile: any) => [profile.id, profile]));
 
-        // Sort profilesData by score in descending order
-        const sortedProfilesData = (profilesData || []).sort((a: any, b: any) => {
-          const scoreA = scoreMap.get(a.id) || 0;
-          const scoreB = scoreMap.get(b.id) || 0;
-          return Number(scoreB) - Number(scoreA); // Descending order
-        });
+        // Order profiles based on the order of profileIdsWithScores
+        const orderedProfilesData = profileIdsWithScores
+          .map((item: any) => profilesMap.get(item.profile_id))
+          .filter(Boolean); // Filter out any null/undefined if a profile_id didn't match
 
-        const formattedResults: ProfileCardData[] = sortedProfilesData.map((profile: any) => ({
+        const formattedResults: ProfileCardData[] = orderedProfilesData.map((profile: any) => ({
           id: profile.id,
           name: profile.name,
           avatar_url: profile.avatar_url,
