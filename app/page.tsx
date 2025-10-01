@@ -97,10 +97,75 @@ export default function Home() {
         const profileIdsWithScores = data.map((item: any) => ({ profile_id: item.id || item.profile_id, score: item.semantic_similarity || item.score }));
         const profileIds = profileIdsWithScores.map((item: any) => item.profile_id);
 
+        const { data: profileEmbeddingsData, error: profileEmbeddingsError } = await supabase
+          .from("profile_embeddings")
+          .select("id, content")
+          .in("id", profileIds);
+
+        if (profileEmbeddingsError) {
+          throw profileEmbeddingsError;
+        }
+
+        const { data: menteeDetailsRaw, error: menteeDetailsError } = await supabase
+          .from("mentee_details")
+          .select("profile_id, role, tech_stack, current_location, current_ctc, expected_ctc")
+          .in("profile_id", profileIds);
+
+        if (menteeDetailsError) {
+          throw menteeDetailsError;
+        }
+
+        const menteeDetailsData = menteeDetailsRaw;
+
+        const profileEmbeddingsMap = new Map(profileEmbeddingsData.map((item: any) => [item.id, item]));
+        const menteeDetailsMap = new Map(menteeDetailsData.map((item: any) => [item.profile_id, item]));
+
+        const profilesForLLM = await Promise.all(profileIds.map(async (id: string) => {
+          const profileEmbedding = profileEmbeddingsMap.get(id);
+          const menteeDetail = menteeDetailsMap.get(id);
+          
+          let parsedResumeContent = null;
+
+          /* if (profile && profile.resume) {
+            parsedResumeContent = await parseGoogleDrivePdf(profile.resume);
+          } */
+
+          return {
+            profile_id: id,
+            profile_embedding_content: profileEmbedding ? profileEmbedding.content : null,
+            mentee_role: menteeDetail ? menteeDetail.role : null,
+            mentee_tech_stack: menteeDetail ? menteeDetail.tech_stack : null,
+            mentee_current_location: menteeDetail ? menteeDetail.current_location : null,
+            mentee_current_ctc: menteeDetail ? menteeDetail.current_ctc : null,
+            mentee_expected_ctc: menteeDetail ? menteeDetail.expected_ctc : null,
+            //parsedResumeContent,
+          };
+        }));
+
+        const llmPrompt = `Given the following user search query: "${searchQuery}" and a list of profiles with their details, identify the most relevant profiles. Return only a JSON array of profile IDs that are most relevant. Each profile object contains 'profile_id', 'profile_embedding_content' (profiles data  ), 'mentee_role', 'mentee_tech_stack', 'mentee_current_location', 'mentee_current_ctc', 'mentee_expected_ctc' (from mentee_details). Here are the profiles: ${JSON.stringify(profilesForLLM)}`;
+
+        const llmResponse = await openai.chat.completions.create({
+          messages: [
+            {
+              role: "system",
+              content: "You are a helpful assistant that refines search results for talent hiring based on detailed profile information. You must respond with a JSON array of profile IDs.",
+            },
+            {
+              role: "user",
+              content: llmPrompt,
+            },
+          ],
+          model: "gpt-3.5-turbo",
+          response_format: { type: "json_object" },
+        });
+
+        const llmResult = JSON.parse(llmResponse.choices[0].message.content || "{}");
+        const refinedProfileIds = llmResult.relevant_profiles || [];
+
         const { data: profilesData, error: profilesError } = await supabase
           .from("profiles")
           .select("id, name, avatar_url, cohort_number, bio, track, skills, designation, years_of_experience, location")
-          .in("id", profileIds);
+          .in("id", refinedProfileIds);
 
         if (profilesError) {
           throw profilesError;
@@ -109,9 +174,9 @@ export default function Home() {
         // Create a map for quick lookup of profiles by ID
         const profilesMap = new Map(profilesData.map((profile: any) => [profile.id, profile]));
 
-        // Order profiles based on the order of profileIdsWithScores
-        const orderedProfilesData = profileIdsWithScores
-          .map((item: any) => profilesMap.get(item.profile_id))
+        // Order profiles based on the order of refinedProfileIds from the LLM
+        const orderedProfilesData = refinedProfileIds
+          .map((id: string) => profilesMap.get(id))
           .filter(Boolean); // Filter out any null/undefined if a profile_id didn't match
 
         const formattedResults: ProfileCardData[] = orderedProfilesData.map((profile: any) => ({
