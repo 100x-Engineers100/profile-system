@@ -142,15 +142,20 @@ export default function Home() {
           };
         }));
 
-        const llmPrompt = `Given the following user search query: "${searchQuery}" and a list of profiles with their details, only select profiles where at least one important keyword from the query 
-appears in the profile (case insensitive, spacing variations allowed). 
-Then, among these, choose the most relevant ones by considering skills, role, experience, and context. Return only a JSON array of profile IDs with variable name 'profile_ids'. Each profile object contains 'profile_id', 'profile_embedding_content' (profiles data  ), 'mentee_role', 'mentee_tech_stack', 'mentee_current_location', 'mentee_current_ctc', 'mentee_expected_ctc' (from mentee_details). Here are the profiles: ${JSON.stringify(profilesForLLM)}`;
+        const llmPrompt = `User query: "${searchQuery}" Task: 1. The role mentioned in the query is the top priority.
+        Only return profiles that clearly match this role. - Matching should be case-insensitive and allow minor spacing or wording
+        variations. 2. If the query specifies years of experience, it must strictly apply to the same role only.
+        - Do not match profiles where the years of experience belong to a different role.
+        3. Among valid role matches, use skills, context, and experience (for that role only) to decide relevance.
+        4. Never exclude any profile if it correctly matches both the role and experience criteria.
+        5. Output must ONLY be valid JSON in the format: { "profile_ids": ["123", "456", "789"] }
+        Profiles (complete data provided, do not re-filter beyond relevance): ${JSON.stringify(profilesForLLM)}`;
 
         const llmResponse = await openai.chat.completions.create({
           messages: [
             {
               role: "system",
-              content: "You are a helpful assistant that re-ranks talent profiles based on relevance. You must respond with a JSON array of profile IDs.",
+              content: "You are a strict assistant for role-based talent matching. Always return a JSON object with only one key: 'profile_ids'. Prioritize role first, then experience for that role.",
             },
             {
               role: "user",
