@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import { ResumeParser } from "./resumeParser";
+import { ResumeParser } from "@/app/api/parseResume/resumeParser";
 
 const resumeParser = new ResumeParser();
 
@@ -20,8 +20,12 @@ export async function POST(req: NextRequest) {
     }
 
     const results = [] as any[];
+    let processedCount = 0;
 
     for (const profile of profiles) {
+      if (processedCount >= 10) {
+        break;
+      }
       const { id: profileId, resume: googleDriveUrl, resume_content } = profile;
 
       if (resume_content) {
@@ -42,10 +46,22 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      try {
-        const parsedResume = await resumeParser.parseResumeFromUrl(googleDriveUrl);
+      // if (!googleDriveUrl.includes("drive.google.com")) {
+      //   results.push({
+      //     profileId,
+      //     status: "skipped",
+      //     message: "Resume URL is not a Google Drive link",
+      //   });
+      //   continue;
+      // }
+      processedCount++;
 
-        if (!parsedResume || !parsedResume.text) {
+      try {
+        const parsedResume = await resumeParser.parseResumeFromUrl(
+          googleDriveUrl
+        );
+
+        if (!parsedResume || !parsedResume[0].text) {
           results.push({
             profileId,
             status: "failed",
@@ -56,7 +72,7 @@ export async function POST(req: NextRequest) {
 
         const { error: updateError } = await supabase
           .from("profiles")
-          .update({ resume_content: parsedResume.text })
+          .update({ resume_content: parsedResume[0].text })
           .eq("id", profileId);
 
         if (updateError) {
