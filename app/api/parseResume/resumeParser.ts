@@ -10,7 +10,6 @@ export class ResumeParser {
     const reader = new LlamaParseReader({
       apiKey: process.env.LLAMA_CLOUD_API_KEY,
       baseUrl: "https://api.cloud.llamaindex.ai",
-      parsingPreset: "technical-resume",
     });
 
     const documents = await reader.loadData(url);
