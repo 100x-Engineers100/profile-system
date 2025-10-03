@@ -142,13 +142,15 @@ export default function Home() {
           };
         }));
 
-        const llmPrompt = `Given the following user search query: "${searchQuery}" and a list of profiles with their details, identify the most relevant profiles. Return only a JSON array of profile IDs that are most relevant. Each profile object contains 'profile_id', 'profile_embedding_content' (profiles data  ), 'mentee_role', 'mentee_tech_stack', 'mentee_current_location', 'mentee_current_ctc', 'mentee_expected_ctc' (from mentee_details). Here are the profiles: ${JSON.stringify(profilesForLLM)}`;
+        const llmPrompt = `Given the following user search query: "${searchQuery}" and a list of profiles with their details, only select profiles where at least one important keyword from the query 
+appears in the profile (case insensitive, spacing variations allowed). 
+Then, among these, choose the most relevant ones by considering skills, role, experience, and context. Return only a JSON array of profile IDs with variable name 'profile_ids'. Each profile object contains 'profile_id', 'profile_embedding_content' (profiles data  ), 'mentee_role', 'mentee_tech_stack', 'mentee_current_location', 'mentee_current_ctc', 'mentee_expected_ctc' (from mentee_details). Here are the profiles: ${JSON.stringify(profilesForLLM)}`;
 
         const llmResponse = await openai.chat.completions.create({
           messages: [
             {
               role: "system",
-              content: "You are a helpful assistant that refines search results for talent hiring based on detailed profile information. You must respond with a JSON array of profile IDs.",
+              content: "You are a helpful assistant that re-ranks talent profiles based on relevance. You must respond with a JSON array of profile IDs.",
             },
             {
               role: "user",
@@ -160,7 +162,7 @@ export default function Home() {
         });
 
         const llmResult = JSON.parse(llmResponse.choices[0].message.content || "{}");
-        const refinedProfileIds = llmResult.relevant_profiles || [];
+        const refinedProfileIds = llmResult.profile_ids || [];
 
         const { data: profilesData, error: profilesError } = await supabase
           .from("profiles")
