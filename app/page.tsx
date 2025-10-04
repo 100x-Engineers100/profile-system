@@ -83,33 +83,44 @@ export default function Home() {
             {
               role: "system",
               content: `You are an expert at extracting key information from job search queries. Your task is to parse the user's query and extract the following fields into a JSON object:
-              - "role_designation": The job role or designation (e.g., "full stack developer", "frontend engineer").
-              - "skills": A comma-separated list of technical skills (e.g., "React, Node.js, Python").
-              - "years_of_experience": The years of experience, if specified (e.g., "2 years", "5+ years").
-              - "ctc": The expected CTC or salary range, if specified (e.g., "20 LPA", "15-25 LPA").
+              - "skills": A comma-separated list of technical skills (e.g., "React, Node.js, Python"). This field is compulsory. If not explicitly mentioned, infer relevant and accurate skills based on the "role". If no role is provided, omit skills.
+              - "bio": A brief summary or description of the candidate's profile. This field is compulsory. If not explicitly mentioned, infer a general bio based on the role and skills.
+              - "role": The job role (e.g., "full stack developer", "frontend engineer"). This field is optional.
+              - "years_of_experience": The years of experience, if specified (e.g., "2 years", "5+ years"). This field is optional.
+              - "ctc": The expected CTC or salary range, if specified (e.g., "20 LPA", "15-25 LPA"). This field is optional.
               
-              If a field is not explicitly mentioned or cannot be inferred, it should be omitted from the JSON.
+              Ensure "skills", and "bio" are always present in the JSON output. "role", "years_of_experience" and "ctc" should only be included if explicitly mentioned or clearly inferable from the query.
               
               Example User Query: "full stack developer with 2 years of experience in React and Node.js, expecting 20 LPA"
               Example JSON Output:
               {
-                "role_designation": "full stack developer",
+                "role": "full stack developer",
                 "skills": "React, Node.js",
+                "bio": "Experienced full stack developer with expertise in React and Node.js.",
                 "years_of_experience": "2 years",
                 "ctc": "20 LPA"
               }
               
-              Example User Query: "frontend engineer with strong JavaScript skills"
+              Example User Query: "I want candidates for frontend engineer with strong JavaScript skills"
               Example JSON Output:
               {
-                "role_designation": "frontend engineer",
-                "skills": "JavaScript"
+                "role": "frontend engineer",
+                "skills": "JavaScript",
+                "bio": "Frontend engineer with strong JavaScript skills."
               }
               
               Example User Query: "data scientist"
               Example JSON Output:
               {
-                "role_designation": "data scientist"
+                "role": "data scientist",
+                "skills": "Data analysis, Machine Learning, Python",
+                "bio": "Data scientist with expertise in data analysis and machine learning."
+              }
+              
+              Example User Query: "comfyui"
+              Example JSON Output:
+              {
+                "skills" : "ComfyUI"
               }
               `,
             },
@@ -141,7 +152,18 @@ export default function Home() {
         }
 
         const data = await response.json();
-        const profileIdsWithScores = data.map((item: any) => ({ profile_id: item.id || item.profile_id, score: item.semantic_similarity || item.score }));
+
+        // Combine keyword_score and semantic_similarity for ranking
+        const profileIdsWithScores = data.map((item: any) => ({
+          profile_id: item.id || item.profile_id,
+          semantic_similarity: item.semantic_similarity || 0,
+          keyword_score: item.keyword_score || 0,
+          combined_score: (item.semantic_similarity || 0) + (item.keyword_score || 0) // Simple sum for now
+        }));
+
+        // Sort profiles by combined score in descending order
+        profileIdsWithScores.sort((a: any, b: any) => b.combined_score - a.combined_score);
+
         const profileIds = profileIdsWithScores.map((item: any) => item.profile_id);
 
         const { data: profileEmbeddingsData, error: profileEmbeddingsError } = await supabase
