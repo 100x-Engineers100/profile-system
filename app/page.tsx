@@ -77,6 +77,53 @@ export default function Home() {
           return;
         }
 
+        // Step 1: Use LLM to convert natural query to structured JSON
+        const structuredQueryResponse = await openai.chat.completions.create({
+          messages: [
+            {
+              role: "system",
+              content: `You are an expert at extracting key information from job search queries. Your task is to parse the user's query and extract the following fields into a JSON object:
+              - "role_designation": The job role or designation (e.g., "full stack developer", "frontend engineer").
+              - "skills": A comma-separated list of technical skills (e.g., "React, Node.js, Python").
+              - "years_of_experience": The years of experience, if specified (e.g., "2 years", "5+ years").
+              - "ctc": The expected CTC or salary range, if specified (e.g., "20 LPA", "15-25 LPA").
+              
+              If a field is not explicitly mentioned or cannot be inferred, it should be omitted from the JSON.
+              
+              Example User Query: "full stack developer with 2 years of experience in React and Node.js, expecting 20 LPA"
+              Example JSON Output:
+              {
+                "role_designation": "full stack developer",
+                "skills": "React, Node.js",
+                "years_of_experience": "2 years",
+                "ctc": "20 LPA"
+              }
+              
+              Example User Query: "frontend engineer with strong JavaScript skills"
+              Example JSON Output:
+              {
+                "role_designation": "frontend engineer",
+                "skills": "JavaScript"
+              }
+              
+              Example User Query: "data scientist"
+              Example JSON Output:
+              {
+                "role_designation": "data scientist"
+              }
+              `,
+            },
+            {
+              role: "user",
+              content: searchQuery,
+            },
+          ],
+          model: "gpt-3.5-turbo", // You can use a more capable model if needed
+          response_format: { type: "json_object" },
+        });
+
+        const structuredQueryParams = JSON.parse(structuredQueryResponse.choices[0].message.content || "{}");
+
         const response = await fetch(edgeFunctionUrl, {
           method: "POST",
           headers: {
@@ -84,8 +131,8 @@ export default function Home() {
             "Authorization": `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}` 
           },
           body: JSON.stringify({
-            query: searchQuery,
-            llm_config: {enabled:true}
+            query: JSON.stringify(structuredQueryParams),
+            llm_config: {enabled:true},
           }),
         });
 
@@ -142,32 +189,34 @@ export default function Home() {
           };
         }));
 
-        const llmPrompt = `User query: "${searchQuery}" Task: 1. The role mentioned in the query is the top priority.
-        Only return profiles that clearly match this role. - Matching should be case-insensitive and allow minor spacing or wording
-        variations. 2. If the query specifies years of experience, it must strictly apply to the same role only.
-        - Do not match profiles where the years of experience belong to a different role.
-        3. Among valid role matches, use skills, context, and experience (for that role only) to decide relevance.
-        4. Never exclude any profile if it correctly matches both the role and experience criteria.
-        5. Output must ONLY be valid JSON in the format: { "profile_ids": ["123", "456", "789"] }
-        Profiles (complete data provided, do not re-filter beyond relevance): ${JSON.stringify(profilesForLLM)}`;
+        // const llmPrompt = `User query: "${searchQuery}" Task: 1. The role mentioned in the query is the top priority.
+        // Only return profiles that clearly match this role. - Matching should be case-insensitive and allow minor spacing or wording
+        // variations. 2. If the query specifies years of experience, it must strictly apply to the same role only.
+        // - Do not match profiles where the years of experience belong to a different role.
+        // 3. Among valid role matches, use skills, context, and experience (for that role only) to decide relevance.
+        // 4. Never exclude any profile if it correctly matches both the role and experience criteria.
+        // 5. Output must ONLY be valid JSON in the format: { "profile_ids": ["123", "456", "789"] }
+        // Profiles (complete data provided, do not re-filter beyond relevance): ${JSON.stringify(profilesForLLM)}`;
 
-        const llmResponse = await openai.chat.completions.create({
-          messages: [
-            {
-              role: "system",
-              content: "You are a strict assistant for role-based talent matching. Always return a JSON object with only one key: 'profile_ids'. Prioritize role first, then experience for that role.",
-            },
-            {
-              role: "user",
-              content: llmPrompt,
-            },
-          ],
-          model: "gpt-3.5-turbo",
-          response_format: { type: "json_object" },
-        });
+        // const llmResponse = await openai.chat.completions.create({
+        //   messages: [
+        //     {
+        //       role: "system",
+        //       content: "You are a strict assistant for role-based talent matching. Always return a JSON object with only one key: 'profile_ids'. Prioritize role first, then experience for that role.",
+        //     },
+        //     {
+        //       role: "user",
+        //       content: llmPrompt,
+        //     },
+        //   ],
+        //   model: "gpt-3.5-turbo",
+        //   response_format: { type: "json_object" },
+        // });
 
-        const llmResult = JSON.parse(llmResponse.choices[0].message.content || "{}");
-        const refinedProfileIds = llmResult.profile_ids || [];
+        // const llmResult = JSON.parse(llmResponse.choices[0].message.content || "{}");
+        // const refinedProfileIds = llmResult.profile_ids || [];
+
+        const refinedProfileIds = profilesForLLM.map((item: any) => item.profile_id);
 
         const { data: profilesData, error: profilesError } = await supabase
           .from("profiles")
@@ -211,7 +260,7 @@ export default function Home() {
             },
             {
               role: "user",
-              content: `Summarize the search results for "${searchQuery}" which returned ${formattedResults.length} talent.`,
+              content: `Summarize the search results for "${JSON.stringify(structuredQueryParams)}" which returned ${formattedResults.length} talent.`,
             },
           ],
           model: "gpt-3.5-turbo",
