@@ -84,7 +84,7 @@ export default function Home() {
               role: "system",
               content: `You are an expert at extracting key information from job search queries. Your task is to parse the user's query and extract the following fields into a JSON object:
               - "skills": A comma-separated list of technical skills (e.g., "React, Node.js, Python"). This field is compulsory. If not explicitly mentioned, infer relevant and accurate skills based on the "role". If no role is provided, omit skills.
-              - "bio": A brief summary or description of the candidate's profile. This field is compulsory. If not explicitly mentioned, infer a general bio based on the role and skills.
+              - "bio": A concise description combining role and skills. Avoid adjectives, conjunctions (e.g., 'with', 'in'), and exclude words like 'developer', 'professional' from bio even if it is present in query. This field is compulsory. If not explicitly mentioned, infer a bio based on the role and skills, keeping it short and direct.
               - "role": The job role (e.g., "full stack developer", "frontend engineer"). This field is optional.
               - "years_of_experience": The years of experience, if specified (e.g., "2 years", "5+ years"). This field is optional.
               - "ctc": The expected CTC or salary range, if specified (e.g., "20 LPA", "15-25 LPA"). This field is optional.
@@ -96,7 +96,7 @@ export default function Home() {
               {
                 "role": "full stack developer",
                 "skills": "React, Node.js",
-                "bio": "Experienced full stack developer with expertise in React and Node.js.",
+                "bio": "Full stack, React, Node.js.",
                 "years_of_experience": "2 years",
                 "ctc": "20 LPA"
               }
@@ -106,7 +106,7 @@ export default function Home() {
               {
                 "role": "frontend engineer",
                 "skills": "JavaScript",
-                "bio": "Frontend engineer with strong JavaScript skills."
+                "bio": "Frontend, JavaScript."
               }
               
               Example User Query: "data scientist"
@@ -114,13 +114,14 @@ export default function Home() {
               {
                 "role": "data scientist",
                 "skills": "Data analysis, Machine Learning, Python",
-                "bio": "Data scientist with expertise in data analysis and machine learning."
+                "bio": "Data scientist, Data analysis, Machine Learning, Python."
               }
               
               Example User Query: "comfyui"
               Example JSON Output:
               {
-                "skills" : "ComfyUI"
+                "skills" : "ComfyUI",
+                "bio": "ComfyUI."
               }
               `,
             },
