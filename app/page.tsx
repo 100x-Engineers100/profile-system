@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -47,7 +47,6 @@ export default function Home() {
   const [searchResults, setSearchResults] = useState<ProfileCardData[]>([]); // New state for search results
   const [searchLoading, setSearchLoading] = useState(false); // New state for search loading
   const [searchResultsDescription, setSearchResultsDescription] = useState<string | null>(null); // New state for search results description
-
   useEffect(() => {
     fetchFeaturedApps();
   }, []);
@@ -88,8 +87,9 @@ export default function Home() {
               - "role": The job role (e.g., "full stack developer", "frontend engineer"). This field is optional.
               - "years_of_experience": The years of experience, if specified (e.g., "2 years", "5+ years"). This field is optional.
               - "ctc": The expected CTC or salary range, if specified (e.g., "20 LPA", "15-25 LPA"). This field is optional.
+              - "resume": A comprehensive summary of the candidate's professional background, combining role, skills, years of experience, and any other relevant details from the query. This field is compulsory.  Avoid adjectives, conjunctions (e.g., 'with', 'in'), and exclude words like 'developer', 'professional' from resume even if it is present in query. If not explicitly mentioned, infer a resume based on the role skills & other available fields, keeping it short and direct.
               
-              Ensure "skills", and "bio" are always present in the JSON output. "role", "years_of_experience" and "ctc" should only be included if explicitly mentioned or clearly inferable from the query.
+              Ensure "skills", "bio", and "resume" are always present in the JSON output. "role", "years_of_experience" and "ctc" should only be included if explicitly mentioned or clearly inferable from the query.
               
               Example User Query: "full stack developer with 2 years of experience in React and Node.js, expecting 20 LPA"
               Example JSON Output:
@@ -98,7 +98,8 @@ export default function Home() {
                 "skills": "React, Node.js",
                 "bio": "Full stack, React, Node.js.",
                 "years_of_experience": "2 years",
-                "ctc": "20 LPA"
+                "ctc": "20 LPA",
+                "resume": "Full stack with 2 years of experience in React and Node.js, 20 LPA."
               }
               
               Example User Query: "I want candidates for frontend engineer with strong JavaScript skills"
@@ -106,7 +107,8 @@ export default function Home() {
               {
                 "role": "frontend engineer",
                 "skills": "JavaScript",
-                "bio": "Frontend, JavaScript."
+                "bio": "Frontend, JavaScript.",
+                "resume": "Frontend, JavaScript skills."
               }
               
               Example User Query: "data scientist"
@@ -114,14 +116,16 @@ export default function Home() {
               {
                 "role": "data scientist",
                 "skills": "Data analysis, Machine Learning, Python",
-                "bio": "Data scientist, Data analysis, Machine Learning, Python."
+                "bio": "Data scientist, Data analysis, Machine Learning, Python.",
+                "resume": "Data scientist, Data analysis, Machine Learning, and Python."
               }
               
               Example User Query: "comfyui"
               Example JSON Output:
               {
                 "skills" : "ComfyUI",
-                "bio": "ComfyUI."
+                "bio": "ComfyUI.",
+                "resume": "ComfyUI"
               }
               `,
             },
@@ -443,6 +447,7 @@ export default function Home() {
   };
 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen bg-white dark:bg-background">
       {/* Hero Section */}
       <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -750,5 +755,6 @@ export default function Home() {
         </div>
       </section> */}
     </div>
+    </Suspense>
   );
 }

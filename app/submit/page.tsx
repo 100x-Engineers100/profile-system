@@ -9,6 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { Suspense } from "react";
 import { useState, useEffect, useRef } from "react";
 import { FileUpload } from "@/components/ui/file-upload";
 import { MarkdownPreview } from "@/components/ui/markdown-preview";
@@ -391,6 +392,7 @@ export default function SubmitPage() {
   }
 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-2xl mx-auto">
         <Card className="p-6">
@@ -725,5 +727,6 @@ export default function SubmitPage() {
         </Card>
       </div>
     </div>
+    </Suspense>
   );
 }

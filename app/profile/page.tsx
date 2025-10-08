@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
@@ -690,6 +690,7 @@ export default function ProfilePage() {
   const displayProfile = myProfile;
 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
         <Card className="flex flex-col md:flex-row items-center gap-6 p-8 mb-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
@@ -1194,5 +1195,6 @@ export default function ProfilePage() {
           )}
         </div>
       </div>
+    </Suspense>
   );
 }

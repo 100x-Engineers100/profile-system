@@ -19,6 +19,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { supabase } from "@/lib/supabase";
 import { NotificationsDropdown } from "@/components/notifications-dropdown";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Suspense } from "react";
 
 export function SiteHeader() {
   const { user } = useAuth();
@@ -102,7 +103,9 @@ export function SiteHeader() {
         {/* Right side - Navigation and Actions */}
         <div className="flex items-center gap-4">
           <div className="hidden md:flex">
-            <MainNav isAuthenticated={isAuthenticated}/>
+            <Suspense fallback={<div>Loading navigation...</div>}>
+              <MainNav isAuthenticated={isAuthenticated}/>
+            </Suspense>
           </div>
           {user && <NotificationsDropdown />}
           {/* <ThemeToggle /> */}

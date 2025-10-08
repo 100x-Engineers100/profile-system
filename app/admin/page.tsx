@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
@@ -200,125 +200,127 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="container py-8">
-      <div className="max-w-5xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <Select
-            value={statusFilter}
-            onValueChange={(value) =>
-              setStatusFilter(value as ApplicationStatus)
-            }
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="review_requested">Review Requested</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="approved">Approved</SelectItem>
-              <SelectItem value="rejected">Rejected</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+    <Suspense fallback={<div>Loading admin dashboard...</div>}>
+      <div className="container py-8">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+            <Select
+              value={statusFilter}
+              onValueChange={(value) =>
+                setStatusFilter(value as ApplicationStatus)
+              }
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="review_requested">Review Requested</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="approved">Approved</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        <div className="space-y-4">
-          {applications.map((app) => (
-            <Link href={`/applications/${app.id}`} key={app.id}>
-              <Card className="p-4 hover:bg-accent/50 transition-colors">
-                <div className="flex gap-4">
-                  <div className="w-24 h-24 relative rounded-md overflow-hidden flex-shrink-0">
-                    <Image
-                      src={getFirstScreenshotUrl(app.screenshot_url)}
-                      alt={app.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between">
-                      <div>
-                        <h2 className="text-xl font-semibold">{app.title}</h2>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          by {app.creator_user_id}
-                        </p>
-                        <div className="flex flex-wrap gap-1 mb-2">
-                          {app.tags.map((tag) => (
-                            <Badge key={tag} variant="secondary">
-                              {tag}
-                            </Badge>
-                          ))}
+          <div className="space-y-4">
+            {applications.map((app) => (
+              <Link href={`/applications/${app.id}`} key={app.id}>
+                <Card className="p-4 hover:bg-accent/50 transition-colors">
+                  <div className="flex gap-4">
+                    <div className="w-24 h-24 relative rounded-md overflow-hidden flex-shrink-0">
+                      <Image
+                        src={getFirstScreenshotUrl(app.screenshot_url)}
+                        alt={app.title}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <div>
+                          <h2 className="text-xl font-semibold">{app.title}</h2>
+                          <p className="text-sm text-muted-foreground mb-2">
+                            by {app.creator_user_id}
+                          </p>
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {app.tags.map((tag) => (
+                              <Badge key={tag} variant="secondary">
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        {(statusFilter === "pending" ||
-                          statusFilter === "review_requested") && (
-                          <>
+                        <div className="flex items-start gap-2">
+                          {(statusFilter === "pending" ||
+                            statusFilter === "review_requested") && (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="default"
+                                className="bg-green-600 hover:bg-green-700"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleStatusChange(app.id, "approved");
+                                }}
+                              >
+                                <CheckCircle className="h-4 w-4 mr-1" />
+                                Approve
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="default"
+                                className="bg-red-600 hover:bg-red-700"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  handleStatusChange(app.id, "rejected");
+                                }}
+                              >
+                                <XCircle className="h-4 w-4 mr-1" />
+                                Reject
+                              </Button>
+                            </>
+                          )}
+                          {statusFilter === "approved" && (
                             <Button
                               size="sm"
-                              variant="default"
-                              className="bg-green-600 hover:bg-green-700"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleStatusChange(app.id, "approved");
-                              }}
-                            >
-                              <CheckCircle className="h-4 w-4 mr-1" />
-                              Approve
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="default"
-                              className="bg-red-600 hover:bg-red-700"
+                              variant="outline"
                               onClick={(e) => {
                                 e.preventDefault();
                                 handleStatusChange(app.id, "rejected");
                               }}
                             >
-                              <XCircle className="h-4 w-4 mr-1" />
                               Reject
                             </Button>
-                          </>
-                        )}
-                        {statusFilter === "approved" && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleStatusChange(app.id, "rejected");
-                            }}
-                          >
-                            Reject
-                          </Button>
-                        )}
-                        {statusFilter === "rejected" && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleStatusChange(app.id, "pending");
-                            }}
-                          >
-                            Review Again
-                          </Button>
-                        )}
+                          )}
+                          {statusFilter === "rejected" && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleStatusChange(app.id, "pending");
+                              }}
+                            >
+                              Review Again
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Card>
-            </Link>
-          ))}
-        </div>
-
-        {applications.length === 0 && (
-          <div className="text-center text-muted-foreground py-12">
-            No applications found with the selected status.
+                </Card>
+              </Link>
+            ))}
           </div>
-        )}
+
+          {applications.length === 0 && (
+            <div className="text-center text-muted-foreground py-12">
+              No applications found with the selected status.
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </Suspense>
   );
 }

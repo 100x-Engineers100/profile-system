@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -95,6 +95,7 @@ export default function RegisterPage() {
   };
 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <Card className="w-full max-w-md p-6">
         <h1 className="text-2xl font-bold text-center mb-6">Register</h1>
@@ -176,5 +177,6 @@ export default function RegisterPage() {
         </p>
       </Card>
     </div>
+    </Suspense>
   );
 }

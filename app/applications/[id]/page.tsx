@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Suspense } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
@@ -779,6 +779,7 @@ export default function ApplicationPage() {
   if (!application) return null;
 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto">
         <Card className="overflow-hidden">
@@ -1300,5 +1301,6 @@ export default function ApplicationPage() {
         </AlertDialog>
       </div>
     </div>
+    </Suspense>
   );
 }

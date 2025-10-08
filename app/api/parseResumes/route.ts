@@ -3,12 +3,26 @@ import { supabase } from "@/lib/supabase";
 import { LlamaParseReader } from "llama-cloud-services";
 import { Document } from "@llamaindex/core/schema";
 
-// Converts Google Drive share links to direct-download links
-function normalizeGoogleDriveUrl(url: string): string {
+// Converts Google Drive share links to direct-download links and checks public access
+async function normalizeGoogleDriveUrl(
+  url: string
+): Promise<{ normalizedUrl: string; isPublic: boolean }> {
   const fileIdMatch = url.match(/(?:file\/d\/|open\?id=)([a-zA-Z0-9_-]+)/);
-  return fileIdMatch
+  const normalizedUrl = fileIdMatch
     ? `https://drive.google.com/uc?export=download&id=${fileIdMatch[1]}`
     : url;
+
+  try {
+    const response = await fetch(normalizedUrl, { method: "HEAD" });
+    // If status is 2xx, it's likely public or accessible.
+    // If status is 403, it's likely private.
+    // Other statuses might indicate issues but not necessarily private.
+    const isPublic = response.ok && response.status !== 403;
+    return { normalizedUrl, isPublic };
+  } catch (error) {
+    console.error("Error checking Google Drive file accessibility:", error);
+    return { normalizedUrl, isPublic: false }; // Assume private on error
+  }
 }
 
 // Regex-based redaction for PII
@@ -43,6 +57,17 @@ export async function GET(req: NextRequest) {
     const parsedResults: any[] = [];
 
     for (const profile of profiles) {
+      // Skip parsing if resume is empty or null
+      if (!profile.resume) {
+        console.log(`Skipping parsing for profile ${profile.id}: resume field is empty or null.`);
+        parsedResults.push({
+          profile_id: profile.id,
+          status: "skipped",
+          message: "resume field is empty or null",
+        });
+        continue;
+      }
+
       // Skip parsing if resume_content already exists
       if (profile.resume_content) {
         console.log(`Skipping parsing for profile ${profile.id}: resume_content already exists.`);
@@ -55,7 +80,17 @@ export async function GET(req: NextRequest) {
       }
 
       try {
-        const normalizedUrl = normalizeGoogleDriveUrl(profile.resume);
+        const { normalizedUrl, isPublic } = await normalizeGoogleDriveUrl(profile.resume);
+
+        if (!isPublic) {
+          console.warn(`Skipping parsing for profile ${profile.id}: Google Drive file is private or inaccessible.`);
+          parsedResults.push({
+            profile_id: profile.id,
+            status: "skipped",
+            message: "Google Drive file is private or inaccessible",
+          });
+          continue;
+        }
 
         // 2. Fetch the binary file content
         const response = await fetch(normalizedUrl);

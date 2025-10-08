@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
 import { ProfileCardData } from "@/lib/dummy-data";
@@ -32,6 +32,7 @@ export default function ProfilesPage() {
   }
 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Learner Profiles</h1>
@@ -42,5 +43,6 @@ export default function ProfilesPage() {
         </div>
       </div>
     </div>
+    </Suspense>
   );
 }

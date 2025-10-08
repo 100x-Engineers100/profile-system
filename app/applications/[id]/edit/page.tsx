@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/auth-context";
 import { supabase } from "@/lib/supabase";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { FileUpload } from "@/components/ui/file-upload";
 import {
   AlertDialog,
@@ -208,6 +208,7 @@ export default function EditApplicationPage() {
   }
 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-2xl mx-auto">
         <Card className="p-6">
@@ -313,5 +314,6 @@ export default function EditApplicationPage() {
         </Card>
       </div>
     </div>
+    </Suspense>
   );
 }

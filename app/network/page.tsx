@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, Suspense } from 'react';
 import { ProfileCard, ProfileCardData } from '@/components/profile-card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -71,6 +71,7 @@ export default function NetworkPage() {
   }, [displayedProfiles]);
 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
         <h1 className="text-4xl font-extrabold mb-8 text-gray-900 dark:text-white text-center">Explore Our Network</h1>
@@ -152,5 +153,6 @@ export default function NetworkPage() {
         )}
       </div>
     </div>
+    </Suspense>
   );
 }

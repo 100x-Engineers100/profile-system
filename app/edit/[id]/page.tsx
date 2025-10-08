@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -15,7 +15,13 @@ import { FileUpload } from "@/components/ui/file-upload";
 import { MarkdownPreview } from "@/components/ui/markdown-preview";
 import { MarkdownHelp } from "@/components/ui/markdown-help";
 
-export default function EditPage({ params }: { params: { id: string } }) {
+interface EditPageProps {
+  params?: Promise<{ id: string }>;
+}
+
+export default function EditPage({ params }: EditPageProps) {
+  const resolvedParams = params ? use(params) : undefined;
+  const id = resolvedParams?.id;
   const { user } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
@@ -30,15 +36,17 @@ export default function EditPage({ params }: { params: { id: string } }) {
       router.push("/login");
       return;
     }
-    fetchApplication();
-  }, [user, params.id]);
+    if (id) {
+      fetchApplication(id);
+    }
+  }, [user, id]);
 
-  const fetchApplication = async () => {
+  const fetchApplication = async (applicationId: string) => {
     try {
       const { data, error } = await supabase
         .from("applications")
         .select("*")
-        .eq("id", params.id)
+        .eq("id", applicationId)
         .single();
 
       if (error) throw error;
@@ -101,7 +109,7 @@ export default function EditPage({ params }: { params: { id: string } }) {
           screenshot_url: screenshotUrl,
           tags,
         })
-        .eq("id", params.id);
+        .eq("id", id);
 
       if (error) throw error;
 
@@ -147,6 +155,7 @@ export default function EditPage({ params }: { params: { id: string } }) {
   if (!application) return null;
 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-2xl mx-auto">
         <Card className="p-6">
@@ -226,5 +235,6 @@ export default function EditPage({ params }: { params: { id: string } }) {
         </Card>
       </div>
     </div>
+    </Suspense>
   );
 }

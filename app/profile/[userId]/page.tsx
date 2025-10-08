@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -268,6 +268,7 @@ export default function UserProfilePage() {
   }
 
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
         <div className="flex flex-col md:flex-row items-center gap-8 pb-8 mb-8 border-b border-gray-200 dark:border-gray-700">
@@ -366,14 +367,14 @@ export default function UserProfilePage() {
                   </a>
                 </Badge>
               )}
-               {displayProfile?.open_to_work?.toLowerCase() === "yes" && displayProfile?.portfolio_link && (
+               {/* {displayProfile?.open_to_work?.toLowerCase() === "yes" && displayProfile?.portfolio_link && ( */}
                 <Badge variant="secondary" className="flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">
                   <FileText className="h-4 w-4" />
                   <a href={displayProfile.resume} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline" style={{textDecoration:'none'}}>
                     View Resume
                   </a>
                 </Badge>
-              )}
+              {/* )} */}
             </div>
           </div>
         </div>
@@ -572,6 +573,7 @@ export default function UserProfilePage() {
         }
       </div>
     </div>
+    </Suspense>
   );
 }
 

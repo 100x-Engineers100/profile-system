@@ -31,19 +31,10 @@ export function ProfileCard({ profile }: { profile: ProfileCardData }) {
               <User className="h-12 w-12 text-gray-400 dark:text-gray-500" />
             </AvatarFallback>
           </Avatar>
-          {/* {profile.connect_url && ( */}
-            <a
-              href={profile.connect_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()} // Prevent card click from triggering
-            >
-              <Button variant="outline" size="sm" className="mt-2">
-                <LinkIcon className="h-4 w-4 mr-2" />
-                View Profile 
-              </Button>
-            </a>
-          {/* )} */}
+          <Button variant="outline" size="sm" className="mt-2">
+            <LinkIcon className="h-4 w-4 mr-2" />
+            View Profile 
+          </Button>
         </div>
         <div className="flex-1 text-left h-full">
           <h3 className="text-xl font-bold mb-1 line-clamp-1 text-gray-900 dark:text-white">
