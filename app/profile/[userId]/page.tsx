@@ -66,6 +66,8 @@ interface Profile {
   completion_rate?: number;
   assignments_submitted?: number;
   lms_userid?: string; // Added lms_userid field
+  expected_ctc?: string; // Added expected_ctc field
+  current_ctc?: string; // Added current_ctc field
 }
 
 interface LmsClassData {
@@ -158,7 +160,7 @@ export default function UserProfilePage() {
         if (profilesData && profilesData.length > 0 && profilesData[0].open_to_work?.toLowerCase() === "yes" && profilesData[0].email) {
           const { data: menteeData, error: menteeError } = await supabase
             .from("mentee_details")
-            .select("portfolio_link, github_link")
+            .select("portfolio_link, github_link, expected_ctc, current_ctc")
             .eq("email", profilesData[0].email)
             .single();
 
@@ -167,6 +169,8 @@ export default function UserProfilePage() {
           } else if (menteeData && profilesData[0]) {
             profilesData[0].portfolio_link = menteeData.portfolio_link;
             profilesData[0].github_link = menteeData.github_link;
+            profilesData[0].expected_ctc = menteeData.expected_ctc;
+            profilesData[0].current_ctc = menteeData.current_ctc;
           }
         }
 
@@ -325,6 +329,12 @@ export default function UserProfilePage() {
                   {displayProfile.designation}
                 </Badge>
               )}
+              {displayProfile?.years_of_experience && ( // Display years_of_experience
+                <Badge variant="secondary" className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                  <Briefcase className="h-4 w-4" />
+                  {displayProfile.years_of_experience} Years Exp.
+                </Badge>
+              )}
               {displayProfile?.track && (
                 <Badge variant="secondary" className="flex items-center gap-2 px-3 py-1 rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
                   <Code className="h-4 w-4" />
@@ -349,6 +359,20 @@ export default function UserProfilePage() {
                 <Badge variant="default" className="flex items-center gap-1 px-3 py-1 rounded-full bg-green-500 text-white dark:bg-green-600">
                   <CheckCircle className="h-3 w-3" />
                   Open to Work
+                </Badge>
+              )}
+              {
+              // displayProfile?.open_to_work?.toLowerCase() === "yes" &&
+               displayProfile?.current_ctc && ( // Display current_ctc
+                <Badge variant="secondary" className="flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">
+                  Current CTC: {displayProfile.current_ctc} LPA
+                </Badge>
+              )}
+              {
+              // displayProfile?.open_to_work?.toLowerCase() === "yes" && 
+              displayProfile?.expected_ctc && ( // Display expected_ctc
+                <Badge variant="secondary" className="flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">
+                  Expected CTC: {displayProfile.expected_ctc} LPA
                 </Badge>
               )}
               {displayProfile?.open_to_work?.toLowerCase() === "yes" && displayProfile?.portfolio_link && (
