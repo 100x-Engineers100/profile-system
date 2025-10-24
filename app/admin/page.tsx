@@ -153,8 +153,6 @@ export default function AdminPage() {
           ? `Your application "${app.title}" has been approved and is now public.`
           : `Your application "${app.title}" has been rejected. Please check the requirements and try again.`;
 
-      // console.log("Creating notification for user:", app.creator_id);
-
       const { error: notificationError } = await supabase
         .from("notifications")
         .insert({
@@ -224,11 +222,14 @@ export default function AdminPage() {
           </div>
 
           <div className="space-y-4">
-            {applications.map((app) => (
+            {applications.map((app, index) => (
               <Link href={`/applications/${app.id}`} key={app.id}>
                 <Card className="p-4 hover:bg-accent/50 transition-colors">
                   <div className="flex gap-4">
                     <div className="w-24 h-24 relative rounded-md overflow-hidden flex-shrink-0">
+                      <span className="absolute top-1 left-1 bg-primary text-primary-foreground rounded-full h-6 w-6 flex items-center justify-center text-xs font-bold">
+                        {index + 1}
+                      </span>
                       <Image
                         src={getFirstScreenshotUrl(app.screenshot_url)}
                         alt={app.title}

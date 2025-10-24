@@ -3,8 +3,14 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
+interface User {
+  id: string;
+  email: string;
+  name?: string;
+}
+
 type AuthContextType = {
-  user: any | null;
+  user: User | null;
   loading: boolean;
   profile: any | null;
 };
@@ -24,7 +30,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data: listener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (session?.user) {
-          setUser(session.user);
+          setUser({
+            id: session.user.id,
+            email: session.user.email,
+            name: session.user.user_metadata?.name || session.user.email?.split("@")[0],
+          });
         } else {
           setUser(null);
           setProfile(null);
@@ -34,7 +44,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Initial check
     supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
+      if (user) {
+        setUser({
+          id: user.id,
+          email: user.email,
+          name: user.user_metadata?.name || user.email?.split("@")[0],
+        });
+      } else {
+        setUser(null);
+      }
     });
 
     return () => {
@@ -87,6 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               user_id: user.user_metadata?.user_id || user.email?.split("@")[0],
               role: "user",
               public_email: true,
+              name: user.name || user.email?.split("@")[0],
             });
           if (insertError) {
             console.error("Error creating profile:", insertError);
@@ -97,6 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               user_id: user.user_metadata?.user_id || user.email?.split("@")[0],
               role: "user",
               public_email: true,
+              name: user.name || user.email?.split("@")[0],
             };
           }
         }

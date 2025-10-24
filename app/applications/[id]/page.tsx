@@ -240,9 +240,6 @@ export default function ApplicationPage() {
 
       if (commentsError) throw commentsError;
 
-      // Add console.log to see the actual data structure
-      // console.log("Raw comments data:", commentsData);
-
       // Format the comments with proper user information
       const formattedComments: Comment[] =
         (commentsData as unknown as SupabaseRawComment[])?.map((comment) => {

@@ -1,13 +1,17 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 // This client should only be used for database operations, not auth
-export const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+export const supabase = createSupabaseClient(supabaseUrl, supabaseServiceKey, {
   realtime: {
     params: {
       eventsPerSecond: 10,
     },
   },
 });
+
+export function createClient() {
+  return createSupabaseClient(supabaseUrl, supabaseServiceKey);
+}

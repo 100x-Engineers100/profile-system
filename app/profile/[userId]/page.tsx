@@ -194,7 +194,7 @@ export default function UserProfilePage() {
               console.error('Error calling external API:', apiResponse.statusText);
             } else {
               const apiData: LmsApiResponse = await apiResponse.json();
-              console.log('External API data:', apiData);
+              
               // Process the API data as needed
               if (apiData.code === 200 && apiData.classes) {
                 let totalClassesSum = 0;

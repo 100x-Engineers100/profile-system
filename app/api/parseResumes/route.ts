@@ -59,7 +59,6 @@ export async function GET(req: NextRequest) {
     for (const profile of profiles) {
       // Skip parsing if resume is empty or null
       if (!profile.resume) {
-        console.log(`Skipping parsing for profile ${profile.id}: resume field is empty or null.`);
         parsedResults.push({
           profile_id: profile.id,
           status: "skipped",
@@ -70,20 +69,23 @@ export async function GET(req: NextRequest) {
 
       // Skip parsing if resume_content already exists
       if (profile.resume_content) {
-        console.log(`Skipping parsing for profile ${profile.id}: resume_content already exists.`);
         parsedResults.push({
           profile_id: profile.id,
           status: "skipped",
           message: "resume_content already exists",
         });
-        continue; 
+        continue;
       }
 
       try {
-        const { normalizedUrl, isPublic } = await normalizeGoogleDriveUrl(profile.resume);
+        const { normalizedUrl, isPublic } = await normalizeGoogleDriveUrl(
+          profile.resume
+        );
 
         if (!isPublic) {
-          console.warn(`Skipping parsing for profile ${profile.id}: Google Drive file is private or inaccessible.`);
+          console.warn(
+            `Skipping parsing for profile ${profile.id}: Google Drive file is private or inaccessible.`
+          );
           parsedResults.push({
             profile_id: profile.id,
             status: "skipped",
@@ -115,8 +117,6 @@ export async function GET(req: NextRequest) {
           .from("resumes")
           .getPublicUrl(filePath);
         const publicUrl = publicUrlData.publicUrl;
-
-        console.log(`Parsing resume for profile ${profile.id}: ${publicUrl}`);
 
         // 5. Parse with LlamaParse
         const documents = await reader.loadData(publicUrl);

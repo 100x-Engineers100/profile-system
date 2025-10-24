@@ -40,10 +40,6 @@ export function NotificationsProvider({
 
   useEffect(() => {
     if (!profile) return;
-
-    // Add debug logging
-    // console.log("Setting up notifications for profile:", profile.id);
-
     // Subscribe to notifications
     const channel = supabase
       .channel("notifications")
