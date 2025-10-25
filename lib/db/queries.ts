@@ -247,7 +247,7 @@ export async function createRoadmap(roadmap: {
   sessionName: string;
   weekNumber: number;
   lectureNumber: number;
-  moduleName: string;x
+  moduleName: string;
   projectBasedMessage: string;
   outcomeBasedMessage: string;
 }) {
@@ -290,7 +290,7 @@ export async function getUserIdeationBalance(
     console.error("Error getting ideation balance:", error);
     throw error;
   }
-  return data?.[balanceType] || 0;
+  return (data as any)?.[balanceType] || 0;
 }
 
 export async function updateUserIdeationBalance(
@@ -381,7 +381,7 @@ export async function updateRechargeRequestStatus(
       throw profileError;
     }
 
-    const currentBalance = profileData[balanceType] || 0;
+    const currentBalance = (profileData as any)[balanceType] || 0;
     const newBalance = currentBalance + amount;
 
     // Update balance

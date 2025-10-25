@@ -4,7 +4,6 @@ import {
   createRechargeRequest,
   updateRechargeRequestStatus,
 } from "@/lib/db/queries";
-import { auth } from "@/lib/auth";
 
 export async function GET(req: Request) {
   try {

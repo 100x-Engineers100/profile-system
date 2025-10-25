@@ -56,7 +56,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
-    const moduleName = searchParams.get("moduleName");
+    let moduleName: string | undefined = searchParams.get("moduleName") || undefined;
 
     if (!userId) {
       return new NextResponse("Missing userId parameter", {

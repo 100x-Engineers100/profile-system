@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getPendingProjectIdeas } from "@/lib/db/queries";
-import { auth } from "@/lib/auth";
 
 const allowedOrigins = ["http://localhost:3001", "http://localhost:8080"];
 
