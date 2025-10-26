@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import { updateProjectIdeaStatus } from "@/lib/db/queries";
 
-const allowedOrigins = ["http://localhost:3001", "http://localhost:8080"];
+const allowedOrigins = [
+  "https://task-100x-quest.lovable.app",
+  "https://profile-system.vercel.app",
+  "https://100x-self-discovery.vercel.app",
+  "http://localhost:3001",
+  "http://localhost:8080",
+];
 
 export async function PUT(req: Request) {
   const origin = req.headers.get("origin");

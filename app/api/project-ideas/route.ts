@@ -5,14 +5,31 @@ import {
   updateProjectIdea,
 } from "@/lib/db/queries";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "http://localhost:8080",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+const ALLOWED_ORIGINS = [
+  "https://task-100x-quest.lovable.app",
+  "https://profile-system.vercel.app",
+  "https://100x-self-discovery.vercel.app",
+  "http://localhost:3001",
+  "http://localhost:8080",
+];
+
+const getCorsHeaders = (request: Request) => {
+  const origin = request.headers.get("Origin");
+  const headers: Record<string, string> = {
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  };
+
+  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  } else {
+    headers["Access-Control-Allow-Origin"] = "http://localhost:8080"; // Fallback or default
+  }
+  return headers;
 };
 
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
+export async function OPTIONS(request: Request) {
+  return NextResponse.json({}, { headers: getCorsHeaders(request) });
 }
 
 export async function POST(request: Request) {
@@ -30,7 +47,7 @@ export async function POST(request: Request) {
     if (!user_id || !module_name) {
       return new NextResponse("Missing required fields", {
         status: 400,
-        headers: corsHeaders,
+        headers: getCorsHeaders(request),
       });
     }
 
@@ -42,12 +59,15 @@ export async function POST(request: Request) {
       chat_history,
       features,
     });
-    return NextResponse.json(newIdea, { status: 201, headers: corsHeaders });
+    return NextResponse.json(newIdea, {
+      status: 201,
+      headers: getCorsHeaders(request),
+    });
   } catch (error) {
     console.error("[PROJECT_IDEAS_POST]", error);
     return new NextResponse("Internal Error", {
       status: 500,
-      headers: corsHeaders,
+      headers: getCorsHeaders(request),
     });
   }
 }
@@ -56,22 +76,26 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
-    let moduleName: string | undefined = searchParams.get("moduleName") || undefined;
+    let moduleName: string | undefined =
+      searchParams.get("moduleName") || undefined;
 
     if (!userId) {
       return new NextResponse("Missing userId parameter", {
         status: 400,
-        headers: corsHeaders,
+        headers: getCorsHeaders(request),
       });
     }
 
     const ideas = await getProjectIdeasByUserId(userId, moduleName);
-    return NextResponse.json(ideas, { status: 200, headers: corsHeaders });
+    return NextResponse.json(ideas, {
+      status: 200,
+      headers: getCorsHeaders(request),
+    });
   } catch (error) {
     console.error("[PROJECT_IDEAS_GET]", error);
     return new NextResponse("Internal Error", {
       status: 500,
-      headers: corsHeaders,
+      headers: getCorsHeaders(request),
     });
   }
 }
@@ -90,7 +114,7 @@ export async function PUT(req: Request) {
     if (!userId || !moduleName) {
       return NextResponse.json(
         { error: "User ID or Module Name is missing" },
-        { status: 400, headers: corsHeaders }
+        { status: 400, headers: getCorsHeaders(req) }
       );
     }
 
@@ -98,7 +122,7 @@ export async function PUT(req: Request) {
     if (!chatHistory || chatHistory.length === 0) {
       return NextResponse.json(
         { error: "Chat history is empty, not saving." },
-        { status: 200, headers: corsHeaders }
+        { status: 200, headers: getCorsHeaders(req) }
       );
     }
 
@@ -123,12 +147,12 @@ export async function PUT(req: Request) {
       if (!updatedIdea) {
         return NextResponse.json(
           { error: "Failed to update project idea: No idea found or updated" },
-          { status: 404, headers: corsHeaders }
+          { status: 404, headers: getCorsHeaders(req) }
         );
       }
       return NextResponse.json(updatedIdea, {
         status: 200,
-        headers: corsHeaders,
+        headers: getCorsHeaders(req),
       });
     } else {
       // 3. If no idea exists, create a new one
@@ -140,13 +164,16 @@ export async function PUT(req: Request) {
         solution: solution,
         features: features,
       });
-      return NextResponse.json(newIdea, { status: 201, headers: corsHeaders });
+      return NextResponse.json(newIdea, {
+        status: 201,
+        headers: getCorsHeaders(req),
+      });
     }
   } catch (error) {
     console.error("[PROJECT_IDEAS_PUT]", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: getCorsHeaders(req) }
     );
   }
 }
