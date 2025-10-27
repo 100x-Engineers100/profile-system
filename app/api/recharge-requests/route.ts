@@ -24,9 +24,9 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { menteeId, amount, chatHistory, balanceType } = await req.json();
+    const { menteeId, amount, chatHistory, balanceType, menteeName } = await req.json();
 
-    if (!menteeId || !amount || !chatHistory || !balanceType) {
+    if (!menteeId || !amount || !chatHistory || !balanceType || !menteeName) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
@@ -34,7 +34,8 @@ export async function POST(req: Request) {
       menteeId,
       amount,
       chatHistory,
-      balanceType
+      balanceType,
+      menteeName
     );
 
     return new NextResponse(JSON.stringify(newRequest), {

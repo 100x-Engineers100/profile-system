@@ -42,9 +42,10 @@ export async function POST(request: Request) {
       solution,
       chat_history,
       features,
+      user_name,
     } = body;
 
-    if (!user_id || !module_name) {
+    if (!user_id || !module_name || !user_name) {
       return new NextResponse("Missing required fields", {
         status: 400,
         headers: getCorsHeaders(request),
@@ -58,6 +59,7 @@ export async function POST(request: Request) {
       solution,
       chat_history,
       features,
+      user_name,
     });
     return NextResponse.json(newIdea, {
       status: 201,
@@ -103,13 +105,14 @@ export async function GET(request: Request) {
 export async function PUT(req: Request) {
   try {
     const {
-      userId,
-      moduleName,
-      chatHistory,
-      problem_statement,
-      solution,
-      features,
-    } = await req.json();
+        userId,
+        moduleName,
+        chatHistory,
+        problem_statement,
+        solution,
+        features,
+        userName,
+      } = await req.json();
 
     if (!userId || !moduleName) {
       return NextResponse.json(
@@ -142,6 +145,7 @@ export async function PUT(req: Request) {
         problem_statement: problem_statement,
         solution: solution,
         features: features,
+        user_name: userName,
       });
 
       if (!updatedIdea) {
@@ -163,6 +167,7 @@ export async function PUT(req: Request) {
         problem_statement: problem_statement,
         solution: solution,
         features: features,
+        user_name: userName,
       });
       return NextResponse.json(newIdea, {
         status: 201,

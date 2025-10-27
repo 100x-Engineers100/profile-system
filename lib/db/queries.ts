@@ -145,6 +145,7 @@ export const createProjectIdea = async (data: {
   chat_history: any;
   features: string[] | null;
   is_accepted?: boolean; // Add is_accepted field
+  user_name?: string; // Add user_name field
 }) => {
   const { data: newIdea, error } = await supabase
     .from("project_ideas")
@@ -156,6 +157,7 @@ export const createProjectIdea = async (data: {
       chat_history: data.chat_history,
       features: data.features,
       is_accepted: data.is_accepted || false, // Default to false if not provided
+      user_name: data.user_name,
     })
     .select();
 
@@ -227,6 +229,7 @@ export async function updateProjectIdea(
     chat_history?: any;
     is_accepted?: boolean;
     features?: string[] | null;
+    user_name?: string; // Add user_name to updateable fields
   }
 ) {
   const { data, error } = await supabase
@@ -403,7 +406,8 @@ export async function createRechargeRequest(
   menteeId: string,
   amount: number,
   chatHistory: ChatMessage[],
-  balanceType: string
+  balanceType: string,
+  menteeName: string
 ) {
   const { data, error } = await supabase
     .from("recharge_requests")
@@ -414,6 +418,7 @@ export async function createRechargeRequest(
       created_at: new Date().toISOString(),
       chat_history: chatHistory,
       type: balanceType,
+      mentee_name: menteeName,
     })
     .select();
 
