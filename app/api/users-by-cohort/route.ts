@@ -5,6 +5,7 @@ const ALLOWED_ORIGINS = [
   "https://task-100x-quest.lovable.app",
   "https://profile-system.vercel.app",
   "https://100x-self-discovery.vercel.app",
+  "http://localhost:8080",
 ];
 
 const getCorsHeaders = (request: Request) => {
