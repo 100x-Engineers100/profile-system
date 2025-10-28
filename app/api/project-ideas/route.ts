@@ -36,16 +36,16 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const {
-      user_id,
-      module_name,
+      userId,
+      moduleName,
       problem_statement,
       solution,
       chat_history,
       features,
-      user_name,
+      userName,
     } = body;
 
-    if (!user_id || !module_name || !user_name) {
+    if (!userId || !moduleName || !userName) {
       return new NextResponse("Missing required fields", {
         status: 400,
         headers: getCorsHeaders(request),
@@ -53,13 +53,13 @@ export async function POST(request: Request) {
     }
 
     const newIdea = await createProjectIdea({
-      user_id,
-      module_name,
+      user_id: userId,
+      module_name: moduleName,
       problem_statement,
       solution,
       chat_history,
       features,
-      user_name,
+      user_name: userName,
     });
     return NextResponse.json(newIdea, {
       status: 201,
@@ -105,14 +105,14 @@ export async function GET(request: Request) {
 export async function PUT(req: Request) {
   try {
     const {
-        userId,
-        moduleName,
-        chatHistory,
-        problem_statement,
-        solution,
-        features,
-        userName,
-      } = await req.json();
+      userId,
+      moduleName,
+      chatHistory,
+      problem_statement,
+      solution,
+      features,
+      userName,
+    } = await req.json();
 
     if (!userId || !moduleName) {
       return NextResponse.json(
