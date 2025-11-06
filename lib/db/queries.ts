@@ -13,35 +13,62 @@ interface IkigaiData {
   your_ikigai: string;
   explanation: string;
   next_steps: string;
-  status?: "complete" | "incomplete";
+  status?: "complete" | "ongoing";
 }
 
 export async function createOrUpdateUserIkigaiData(
   userId: string,
+  chatNumber: number,
   ikigaiDetails: IkigaiData,
   chatHistory: ChatMessage[]
 ) {
-  const { data, error } = await supabase
+  console.log("chatNumber", chatNumber);
+
+  // First, try to update the existing record
+  const { data: updateData, error: updateError } = await supabase
     .from("user_ikigai_data")
-    .upsert(
-      {
-        user_id: userId,
-        ikigai_details: ikigaiDetails,
-        chat_history: chatHistory,
-      },
-      { onConflict: "user_id" }
-    )
+    .update({
+      ikigai_details: ikigaiDetails,
+      chat_history: chatHistory,
+    })
+    .eq("user_id", userId)
+    .eq("chat_number", chatNumber)
     .select();
-  if (error) throw error;
-  return data[0];
+
+  if (updateError) {
+    console.error("Error updating user ikigai data:", updateError);
+    throw updateError;
+  }
+
+  // If the update affected 0 rows, it means the record doesn't exist. So, insert it.
+  if (updateData && updateData.length === 0) {
+    const { data: insertData, error: insertError } = await supabase
+      .from("user_ikigai_data")
+      .insert([
+        {
+          user_id: userId,
+          chat_number: chatNumber,
+          ikigai_details: ikigaiDetails,
+          chat_history: chatHistory,
+        },
+      ])
+      .select();
+
+    if (insertError) {
+      console.error("Error inserting user ikigai data:", insertError);
+      throw insertError;
+    }
+    return { data: insertData[0] };
+  }
+
+  return { data: updateData[0] };
 }
 
 export async function getUserIkigaiDataByUserId(userId: string) {
   const { data, error } = await supabase
     .from("user_ikigai_data")
-    .select("ikigai_details, chat_history")
-    .eq("user_id", userId)
-    .single();
+    .select("ikigai_details, chat_history, chat_number")
+    .eq("user_id", userId);
   if (error) {
     if (error.code === "PGRST116") {
       // No rows found
@@ -49,10 +76,8 @@ export async function getUserIkigaiDataByUserId(userId: string) {
     }
     throw error;
   }
-  return {
-    ikigai_details: data.ikigai_details,
-    chat_history: data.chat_history,
-  };
+
+  return data;
 }
 
 export async function deleteUserIkigaiDataByUserId(userId: string) {
