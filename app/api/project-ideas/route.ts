@@ -9,6 +9,7 @@ const ALLOWED_ORIGINS = [
   "https://task-100x-quest.lovable.app",
   "https://profile-system.vercel.app",
   "https://100x-self-discovery.vercel.app",
+  "https://self-discovery.100xengineers.com",
   "http://localhost:3001",
   "http://localhost:8080",
 ];
