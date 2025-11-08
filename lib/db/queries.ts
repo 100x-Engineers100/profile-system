@@ -22,8 +22,6 @@ export async function createOrUpdateUserIkigaiData(
   ikigaiDetails: IkigaiData,
   chatHistory: ChatMessage[]
 ) {
-  console.log("chatNumber", chatNumber);
-
   // First, try to update the existing record
   const { data: updateData, error: updateError } = await supabase
     .from("user_ikigai_data")

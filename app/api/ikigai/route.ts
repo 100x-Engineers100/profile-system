@@ -50,15 +50,9 @@ export async function POST(request: Request) {
 
     let currentChatNumber: number;
 
-    console.log("chat_number", chat_number);
-
     if (chat_number) {
-      // If chat_number is provided, it's an update to an existing chat
-      console.log("10");
-
       currentChatNumber = chat_number;
     } else {
-      console.log("11");
       // If chat_number is not provided, it's a new chat
       const existingIkigaiData = await getUserIkigaiDataByUserId(userId);
       const existingChatNumbers = (existingIkigaiData || []).map(
