@@ -363,14 +363,15 @@ export async function updateIkigaiBalance(userId: string, amount: number) {
   return data;
 }
 
-export async function getPendingRechargeRequests() {
+export async function getRechargeRequests() {
   const { data, error } = await supabase
     .from("recharge_requests")
     .select("*")
-    .eq("status", "pending");
+    .in("status", ["pending", "approved"])
+    .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error getting pending recharge requests:", error);
+    console.error("Error getting recharge requests:", error);
     throw error;
   }
   return data;
@@ -434,7 +435,7 @@ export async function createRechargeRequest(
 ) {
   const { data, error } = await supabase
     .from("recharge_requests")
-    .insert({
+    .upsert({
       mentee_id: menteeId,
       amount,
       status: "pending",

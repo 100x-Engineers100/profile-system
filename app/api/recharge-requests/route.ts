@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import {
-  getPendingRechargeRequests,
+  getRechargeRequests,
   createRechargeRequest,
   updateRechargeRequestStatus,
 } from "@/lib/db/queries";
 
 export async function GET(req: Request) {
   try {
-    const requests = await getPendingRechargeRequests();
+    const requests = await getRechargeRequests();
 
     return new NextResponse(JSON.stringify(requests), {
       status: 200,
@@ -24,7 +24,8 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { menteeId, amount, chatHistory, balanceType, menteeName } = await req.json();
+    const { menteeId, amount, chatHistory, balanceType, menteeName } =
+      await req.json();
 
     if (!menteeId || !amount || !chatHistory || !balanceType || !menteeName) {
       return new NextResponse("Missing required fields", { status: 400 });
