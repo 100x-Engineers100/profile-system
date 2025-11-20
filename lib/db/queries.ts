@@ -364,17 +364,47 @@ export async function updateIkigaiBalance(userId: string, amount: number) {
 }
 
 export async function getRechargeRequests() {
-  const { data, error } = await supabase
+  const { data: requests, error: requestsError } = await supabase
     .from("recharge_requests")
     .select("*")
     .in("status", ["pending", "approved"])
     .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("Error getting recharge requests:", error);
-    throw error;
+  if (requestsError) {
+    console.error("Error getting recharge requests:", requestsError);
+    throw requestsError;
   }
-  return data;
+
+  // Fetch approved counts for each mentee_id and type
+  const { data: approvedRequestsData, error: countsError } = await supabase
+    .from("recharge_requests")
+    .select("mentee_id, type")
+    .eq("status", "approved");
+
+  if (countsError) {
+    console.error("Error getting approved counts:", countsError);
+    throw countsError;
+  }
+
+  // Map approved counts for easy lookup
+  const approvedCountsMap = new Map<string, number>();
+  approvedRequestsData.forEach((item: any) => {
+    // Create a unique key for mentee_id and type
+    const key = `${item.mentee_id}-${item.type}`;
+    approvedCountsMap.set(key, (approvedCountsMap.get(key) || 0) + 1);
+  });
+
+  // Enrich the requests with the approved count
+  const enrichedRequests = requests.map((request: any) => {
+    const key = `${request.mentee_id}-${request.type}`;
+    const approvedCount = approvedCountsMap.get(key) || 0;
+    return {
+      ...request,
+      approved_count_for_type: approvedCount,
+    };
+  });
+
+  return enrichedRequests;
 }
 
 export async function updateRechargeRequestStatus(
