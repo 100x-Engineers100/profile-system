@@ -1,26 +1,45 @@
 import { NextResponse } from "next/server";
-import {
-  createOrUpdateUserIkigaiData,
-  getUserIkigaiDataByUserId,
-  deleteUserIkigaiDataByUserId,
-} from "@/lib/db/queries";
-
-interface ChatMessage {
-  role: string;
-  content: string;
-  chat_history?: ChatMessage[];
-}
-
 interface IkigaiData {
   what_you_love: string;
   what_you_are_good_at: string;
   what_world_needs: string;
   what_you_can_be_paid_for: string;
+  status: string;
   your_ikigai: string;
   explanation: string;
-  next_steps: string;
-  status?: "complete" | "ongoing";
+  next_steps?: string;
+  strength_map?: {
+    core_strengths: string[];
+    supporting_skills: string[];
+    proof: string;
+  };
+  weakness_map?: {
+    skill_gaps: string[];
+    risks: string[];
+    blocks: string[];
+  };
 }
+
+interface ChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  parts: Array<{ type: "text"; text: string }>;
+}
+
+interface IkigaiApiResponse {
+  id: string;
+  created_at: string;
+  user_id: string;
+  chat_number: number;
+  ikigai_details: IkigaiData;
+  chat_history: ChatMessage[];
+}
+
+import {
+  createOrUpdateUserIkigaiData,
+  getUserIkigaiDataByUserId,
+  deleteUserIkigaiDataByUserId,
+} from "@/lib/db/queries";
 
 export async function POST(request: Request) {
   try {
