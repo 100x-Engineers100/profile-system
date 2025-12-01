@@ -127,7 +127,9 @@ export function FileUpload({
         const {
           data: { publicUrl },
         } = supabase.storage.from("uploads").getPublicUrl(filePath);
-        
+        uploadedUrls.push(publicUrl);
+      }
+
       // Update preview URLs
       if (multiple) {
         setPreviewUrls((prev) => [...prev, ...uploadedUrls]);
@@ -137,7 +139,7 @@ export function FileUpload({
 
       // Call onUploadComplete for each uploaded file
       uploadedUrls.forEach((url) => onUploadComplete(url));
-    }} catch (error: any) {
+    } catch (error: any) {
       console.error("Detailed error:", error);
       toast({
         title: "Error",

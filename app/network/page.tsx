@@ -1,23 +1,35 @@
 'use client';
 
+import { useRouter } from "next/navigation";
 import { useState, useMemo, useEffect, Suspense } from 'react';
 import { ProfileCard, ProfileCardData } from '@/components/profile-card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from "@/contexts/auth-context";
 
 export default function NetworkPage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
   const [allProfiles, setAllProfiles] = useState<ProfileCardData[]>([]);
   const [displayedProfiles, setDisplayedProfiles] = useState<ProfileCardData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  // const [loading, setLoading] = useState<boolean>(true);
   const [selectedCohort, setSelectedCohort] = useState<string>('all');
   const [activeTab, setActiveTab] = useState<string>('members');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
+    console.log('user:', user, 'loading:', loading);
+    
+    if (!loading && !user) {
+      router.push("/login");
+    }
+  }, [user, loading, router]);
+
+  useEffect(() => {
     const fetchAllProfiles = async () => {
-      setLoading(true);
+      // setLoading(true);
       const { data, error } = await supabase
         .from('profiles')
         .select('id, name, avatar_url, cohort_number, track, bio, skills, designation, years_of_experience, location');
@@ -28,7 +40,7 @@ export default function NetworkPage() {
       } else {
         setAllProfiles(data as ProfileCardData[]);
       }
-      setLoading(false);
+      // setLoading(false);
     };
 
     fetchAllProfiles();

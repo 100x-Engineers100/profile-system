@@ -312,19 +312,63 @@ export default function SubmitPage() {
 
       // Trigger embedding generation for the new application
       await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/generate-embeddings`,
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/generate-embeddings-v2`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
           },
-          body: JSON.stringify([
-            {
-              application_id: app.id,
-              content: `${app.title} ${app.description} ${(app.tags || []).join(' ')} ${(app.project_categories || []).join(' ')} ${(app.team_members || []).map((member: any) => member.name).join(' ')}`,
-            },
-          ]),
+          body: JSON.stringify({
+            applications: [
+              {
+                application_id: app.id,
+                content: `${app.title} ${app.description} ${(app.tags || []).join(' ')} ${(app.project_categories || []).join(' ')} ${(app.team_members || []).map((member: any) => member.name).join(' ')}`,
+              },
+            ],
+            profiles: [
+              {
+                profile_id: profile.id,
+                content: [
+                  profile.name ? `Name: ${profile.name}` : '',
+                  profile.bio ? `Bio: ${profile.bio}` : '',
+                  profile.designation ? `Designation: ${profile.designation}` : '',
+                  profile.company ? `Company: ${profile.company}` : '',
+                  profile.location ? `Location: ${profile.location}` : '',
+                  profile.skills ? `Skills: ${profile.skills}` : '',
+                  profile.years_of_experience ? `Years of Experience: ${profile.years_of_experience}` : '',
+                  profile.cohort_number ? `Cohort Number: ${profile.cohort_number}` : '',
+                  profile.is_student ? `Is Student: ${profile.is_student}` : '',
+                  profile.working_professional ? `Working Professional: ${profile.working_professional}` : '',
+                  profile.study_stream ? `Study Stream: ${profile.study_stream}` : '',
+                  profile.expected_outcomes ? `Expected Outcomes: ${profile.expected_outcomes}` : '',
+                  profile.track ? `Track: ${profile.track}` : '',
+                  profile.founder ? `Founder: ${profile.founder}` : '',
+                  profile.founder_details ? `Founder Details: ${profile.founder_details}` : '',
+                  profile.code_type ? `Code Type: ${profile.code_type}` : '',
+                  profile.current_industry ? `Current Industry: ${profile.current_industry}` : '',
+                  profile.domain ? `Domain: ${profile.domain}` : '',
+                  profile.target_industries ? `Target Industries: ${profile.target_industries}` : '',
+                  profile.industry_interest ? `Industry Interest: ${profile.industry_interest}` : '',
+                  profile.interest_areas ? `Interest Areas: ${profile.interest_areas}` : '',
+                  profile.open_to_work ? `Open to Work: ${profile.open_to_work}` : '',
+                  profile.house ? `House: ${profile.house}` : '',
+                ].filter(Boolean).join(' \n '),
+                name: profile.name,
+                bio: profile.bio,
+                skills: profile.skills,
+                years_of_experience: profile.years_of_experience,
+                location: profile.location,
+                target_industries: profile.target_industries || [],
+                designation: profile.designation,
+                house: profile.house,
+                cohort_number: profile.cohort_number,
+                current_ctc: null, // Assuming current_ctc is not directly available in profile object
+                expected_ctc: null, // Assuming expected_ctc is not directly available in profile object
+                resume_content: profile.resume,
+              },
+            ],
+          }),
         }
       );
 

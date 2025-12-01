@@ -54,6 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         setUser(null);
       }
+      setLoading(false); // Set loading to false after initial user check
     });
 
     return () => {
@@ -65,16 +66,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async function ensureProfile() {
       if (!user) {
         setProfile(null);
-        setLoading(false);
         return;
       }
 
       // 1. Check for a profile with the current UID
-      let { data: existing, error: fetchError } = await supabase
+      let existing = null;
+      const { data, error: fetchError } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", user.id)
         .single();
+
+      if (fetchError && fetchError.code === 'PGRST116') {
+        // No profile found by ID, proceed to check by email
+        existing = null;
+      } else if (fetchError) {
+        console.error("Error fetching profile by ID:", fetchError);
+        setLoading(false);
+        return;
+      } else {
+        existing = data;
+      }
 
       // 2. If not found, check for a profile with the same email (old UUID)
       if (!existing) {
@@ -85,28 +97,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .single();
 
         if (oldProfile) {
-          // 3. Migrate: update the id to the new UID
-          const { error: updateError } = await supabase
-            .from("profiles")
-            .update({ id: user.id })
-            .eq("email", user.email);
+            // We found an old profile by email, but the user's auth.users.id has changed.
+            // We need to associate this old profile with the new user.id.
+            // The profiles.id (which profile_embeddings references) should remain the same.
 
-          if (updateError) {
-            console.error("Error migrating profile:", updateError);
+            // Update the profiles table's user_id to the new user.id
+            const { error: profileUpdateError } = await supabase
+              .from("profiles")
+              .update({ user_id: user.id })
+              .eq("id", oldProfile.id);
+
+            if (profileUpdateError) {
+              console.error("Error migrating profile user_id:", profileUpdateError);
+              setLoading(false);
+              return;
+            }
+
+            // If update is successful, update existing
+            existing = { ...oldProfile, user_id: user.id };
           } else {
-            existing = { ...oldProfile, id: user.id };
-          }
-        } else {
           // 4. If no profile, create a new one
           const { error: insertError } = await supabase
             .from("profiles")
             .insert({
               id: user.id,
               email: user.email,
-              user_id: user.user_metadata?.user_id || user.email?.split("@")[0],
+              user_id: user.id,
               role: "user",
               public_email: true,
-              name: user.name || user.email?.split("@")[0],
+              name: user.user_metadata?.name || user.email?.split("@")[0],
             });
           if (insertError) {
             console.error("Error creating profile:", insertError);
@@ -114,10 +133,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             existing = {
               id: user.id,
               email: user.email,
-              user_id: user.user_metadata?.user_id || user.email?.split("@")[0],
+              user_id: user.id,
               role: "user",
               public_email: true,
-              name: user.name || user.email?.split("@")[0],
+              name: user.user_metadata?.name || user.email?.split("@")[0],
             };
           }
         }
@@ -127,8 +146,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     }
 
-    ensureProfile();
-  }, [user]);
+    if (!loading) { // Only run ensureProfile if initial loading is complete
+      ensureProfile();
+    }
+  }, [user, loading]);
 
   return (
     <AuthContext.Provider value={{ user, loading, profile }}>

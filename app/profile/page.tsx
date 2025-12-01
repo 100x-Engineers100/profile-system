@@ -34,6 +34,7 @@ import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { ApplicationCard } from "@/components/application-card";
+import Link from "next/link";
 
 type Profile = {
   id?: string;
@@ -435,7 +436,7 @@ export default function ProfilePage() {
 
         // Trigger embedding generation for the updated profile
         await fetch(
-          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/generate-embeddings`,
+          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/generate-embeddings-v2`,
           {
             method: "POST",
             headers: {
@@ -445,8 +446,8 @@ export default function ProfilePage() {
             body: JSON.stringify({
               profiles: [
                 {
-                  profile_id: data[0].id,
-                  content: [
+                  id: data[0].id,
+                  full_text: [
                     data[0].name ? `Name: ${data[0].name}` : '',
                     data[0].bio ? `Bio: ${data[0].bio}` : '',
                     data[0].designation ? `Designation: ${data[0].designation}` : '',
@@ -471,6 +472,11 @@ export default function ProfilePage() {
                     data[0].open_to_work ? `Open to Work: ${data[0].open_to_work}` : '',
                     data[0].house ? `House: ${data[0].house}` : '',
                   ].filter(Boolean).join(' \n '),
+                  bio: data[0].bio,
+                  skills: data[0].skills,
+                  experience: data[0].years_of_experience,
+                  ctc: null, // Assuming CTC is not directly available in data[0]
+                  resume: data[0].resume,
                 },
               ],
             }),
@@ -1088,7 +1094,20 @@ export default function ProfilePage() {
                   <TabsContent value="applications" className="mt-6">
                     <Tabs defaultValue="my" className="w-full">
                       <TabsContent value="my" className="mt-6">
-                        {myApplications.length > 0 ? (
+                        {loading ? (
+                          <div className="flex justify-center items-center h-64">
+                            <p className="text-muted-foreground">Loading your applications...</p>
+                          </div>
+                        ) : myApplications.length === 0 ? (
+                          <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
+                            <p className="text-muted-foreground max-w-md">You have not created any applications yet.</p>
+                            <Link href="/submit">
+                              <Button variant="default" size="lg">
+                                Create Application
+                              </Button>
+                            </Link>
+                          </div>
+                        ) : (
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {myApplications.map((application) => (
                               <ApplicationCard
@@ -1099,8 +1118,6 @@ export default function ProfilePage() {
                               />
                             ))}
                           </div>
-                        ) : (
-                          <p className="text-center text-gray-500 dark:text-gray-400 py-12 text-lg">No applications created yet.</p>
                         )}
                       </TabsContent>
                       <TabsContent value="liked" className="mt-6">
