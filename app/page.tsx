@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -37,6 +39,15 @@ type FeaturedApp = {
 };
 
 export default function Home() {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
+
   const [featuredApps, setFeaturedApps] = useState<FeaturedApp[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentSlides, setCurrentSlides] = useState<{ [key: string]: number }>(
@@ -446,6 +457,14 @@ export default function Home() {
     }
   };
 
+  if (authLoading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-4 border-b-4 border-[#FF6445]"></div>
+      </div>
+    );
+  }
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen bg-white dark:bg-background">
@@ -456,13 +475,13 @@ export default function Home() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight mb-6">
             {/* <span className="text-foreground">Welcome to</span>{" "}
-            <span className="text-orange-500">
+            <span className="text-[#FF6445]">
               <span className="font-bold text-black">100</span>
-              <span className="text-orange-500">x</span>
+              <span className="text-[#FF6445]">x</span>
               <span className="text-black">Engineers</span>
             </span> */}
             <span className="font-bold text-black">Find 100</span>
-            <span className="text-orange-500">x</span>
+            <span className="text-[#FF6445]">x</span>
             <span className="font-bold text-black">Talent</span>
           </h1>
 
@@ -475,7 +494,7 @@ export default function Home() {
             <Input
               type="text"
               placeholder="Search full stack developer with 2 years of experience"
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF6445] dark:bg-gray-800 dark:border-gray-700 dark:text-white"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {
@@ -487,7 +506,7 @@ export default function Home() {
           {/* <div className="flex justify-center gap-6">
             <Button
               size="lg"
-              className="text-lg px-8 bg-orange-500 hover:bg-orange-500/90 text-white"
+              className="text-lg px-8 bg-[#FF6445] hover:bg-[#FF6445]/90 text-white"
               asChild
             >
               <Link href="/profiles">Explore Talent</Link>
@@ -495,7 +514,7 @@ export default function Home() {
             <Button
               size="lg"
               variant="outline"
-              className="text-lg px-8 border-orange-500 text-orange-500 hover:bg-orange-500/10"
+              className="text-lg px-8 border-[#FF6445] text-[#FF6445] hover:bg-[#FF6445]/10"
               asChild
             >
               <Link href="/submit">Submit Your App</Link>
@@ -522,7 +541,7 @@ export default function Home() {
       {searchLoading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-75">
           <div className="flex flex-col items-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-500 mb-4"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#FF6445] mb-4"></div>
             <h2 className="text-xl font-bold text-white">
               Searching for "{searchQuery}"...
             </h2>
@@ -534,7 +553,7 @@ export default function Home() {
 
       {showProfiles && !searchLoading && searchResults.length === 0 && searchQuery.trim() !== "" && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 text-center">
-          <h2 className="text-3xl font-bold text-orange-500 mb-8">
+          <h2 className="text-3xl font-bold text-[#FF6445] mb-8">
             No results found for "{searchQuery}"
           </h2>
         </div>
@@ -545,7 +564,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/95 to-background/90" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-orange-500">
+            <h2 className="text-3xl font-bold text-[#FF6445]">
               Featured Applications
             </h2>
             <p className="text-muted-foreground mt-2">
@@ -558,7 +577,7 @@ export default function Home() {
               ? [...Array(3)].map((_, i) => (
                   <Card
                     key={i}
-                    className="overflow-hidden animate-pulse bg-card/50 backdrop-blur border-orange-500/10"
+                    className="overflow-hidden animate-pulse bg-card/50 backdrop-blur border-[#FF6445]/10"
                   >
                     <div className="aspect-video bg-muted" />
                     <div className="p-6">
@@ -571,7 +590,7 @@ export default function Home() {
               : featuredApps.map((app, index) => (
                   <Card
                     key={index}
-                    className="overflow-hidden hover:shadow-xl hover:shadow-orange-500/5 transition-all duration-300 border-orange-500/10 hover:border-orange-500/20 bg-card/50 backdrop-blur"
+                    className="overflow-hidden hover:shadow-xl hover:shadow-[#FF6445]/5 transition-all duration-300 border-[#FF6445]/10 hover:border-[#FF6445]/20 bg-card/50 backdrop-blur"
                   >
                     <div className="aspect-video w-full overflow-hidden relative group">
                       {(() => {
@@ -675,8 +694,8 @@ export default function Home() {
                           {app.title}
                         </h3>
 
-                        <div className="flex items-center text-orange-500">
-                          <Star className="w-4 h-4 mr-1 fill-orange-500" />
+                        <div className="flex items-center text-[#FF6445]">
+                          <Star className="w-4 h-4 mr-1 fill-[#FF6445]" />
                           <span>{app.stars}</span>
                         </div>
                       </div>
@@ -685,7 +704,7 @@ export default function Home() {
                       </p>
 
                       <Button
-                        className="w-full bg-orange-500/10 text-orange-500 hover:bg-orange-500/20"
+                        className="w-full bg-[#FF6445]/10 text-[#FF6445] hover:bg-[#FF6445]/20"
                         asChild
                       >
                         <Link href={`/applications/${app.id}`}>
@@ -700,7 +719,7 @@ export default function Home() {
           <div className="mt-12 text-center">
             <Link
               href="/applications"
-              className="inline-flex items-center text-lg font-semibold text-orange-500 border border-orange-500 px-4 py-2 rounded-md hover:text-white/80 hover:bg-orange-500/10 transition-colors"
+              className="inline-flex items-center text-lg font-semibold text-[#FF6445] border border-[#FF6445] px-4 py-2 rounded-md hover:text-white/80 hover:bg-[#FF6445]/10 transition-colors"
             >
               View All Applications
               <ChevronRight className="ml-2 h-5 w-5" />
@@ -712,7 +731,7 @@ export default function Home() {
       {/* Features Section */}
       {/* <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-orange-500 mb-4">
+          <h2 className="text-3xl font-bold text-[#FF6445] mb-4">
             Why Choose 100xEngineers?
           </h2>
           <p className="text-xl text-muted-foreground">
@@ -721,9 +740,9 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="flex flex-col items-center p-8 rounded-lg bg-orange-500/5 border border-orange-500/10 hover:bg-orange-500/10 transition-colors">
-            <Sparkles className="h-12 w-12 text-orange-500 mb-4" />
-            <h3 className="text-xl font-semibold text-orange-500 mb-3">
+          <div className="flex flex-col items-center p-8 rounded-lg bg-[#FF6445]/5 border border-[#FF6445]/10 hover:bg-[#FF6445]/10 transition-colors">
+            <Sparkles className="h-12 w-12 text-[#FF6445] mb-4" />
+            <h3 className="text-xl font-semibold text-[#FF6445] mb-3">
               Centralized Hub
             </h3>
             <p className="text-muted-foreground text-center">
@@ -731,9 +750,9 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="flex flex-col items-center p-8 rounded-lg bg-orange-500/5 border border-orange-500/10 hover:bg-orange-500/10 transition-colors">
-            <Users className="h-12 w-12 text-orange-500 mb-4" />
-            <h3 className="text-xl font-semibold text-orange-500 mb-3">
+          <div className="flex flex-col items-center p-8 rounded-lg bg-[#FF6445]/5 border border-[#FF6445]/10 hover:bg-[#FF6445]/10 transition-colors">
+            <Users className="h-12 w-12 text-[#FF6445] mb-4" />
+            <h3 className="text-xl font-semibold text-[#FF6445] mb-3">
               Developer Focused
             </h3>
             <p className="text-muted-foreground text-center">
@@ -742,9 +761,9 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="flex flex-col items-center p-8 rounded-lg bg-orange-500/5 border border-orange-500/10 hover:bg-orange-500/10 transition-colors">
-            <Rocket className="h-12 w-12 text-orange-500 mb-4" />
-            <h3 className="text-xl font-semibold text-orange-500 mb-3">
+          <div className="flex flex-col items-center p-8 rounded-lg bg-[#FF6445]/5 border border-[#FF6445]/10 hover:bg-[#FF6445]/10 transition-colors">
+            <Rocket className="h-12 w-12 text-[#FF6445] mb-4" />
+            <h3 className="text-xl font-semibold text-[#FF6445] mb-3">
               Launch & Grow
             </h3>
             <p className="text-muted-foreground text-center">

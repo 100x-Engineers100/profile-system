@@ -22,10 +22,10 @@ export type ProfileCardData = {
 
 export function ProfileCard({ profile }: { profile: ProfileCardData }) {
   return (
-    <Link href={`/profile/${profile.id}`}target="_blank" className="block">
+    <Link href={`/profile/${profile.id}`} target="_blank" className="block">
       <Card className="p-6 flex items-center rounded-xl shadow-md hover:shadow-lg transition-all duration-300 h-full bg-white dark:bg-gray-800">
         <div className="flex flex-col items-center mr-4">
-          <Avatar className="h-24 w-24 mb-2 border-4 border-orange-500 shadow-lg">
+          <Avatar className="h-24 w-24 border-4 border-[#FF6445] shadow-lg">
             <AvatarImage src={profile.avatar_url} alt={profile.name} />
             <AvatarFallback>
               <User className="h-12 w-12 text-gray-400 dark:text-gray-500" />
@@ -41,14 +41,14 @@ export function ProfileCard({ profile }: { profile: ProfileCardData }) {
             {profile.name}
           </h3>
           {profile.designation && (
-            <Badge variant="secondary" className="flex items-center gap-2 mb-1 w-fit text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700">
-              <Briefcase className="h-3 w-3" />
+            <Badge variant="secondary" className="my-1 bg-[#FF6445]/10 text-[#FF6445] dark:bg-[#FF6445]/20 dark:text-[#FF6445] px-3 py-1 rounded-full">
+              <Briefcase className="h-3 w-3 mr-2" />
               {profile.designation}
             </Badge>
           )}
           {profile.track && (
-            <Badge variant="secondary" className="flex items-center gap-2 mb-1 w-fit text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700">
-              <Code className="h-3 w-3" />
+            <Badge variant="secondary" className="my-1 bg-[#FF6445]/10 text-[#FF6445] dark:bg-[#FF6445]/20 dark:text-[#FF6445] px-3 py-1 rounded-full">
+              <Code className="h-3 w-3 mr-2" />
               {profile.track.includes("Employment") ? "Employment Track" : profile.track.includes("Entrepreneur") ? "Entrepreneur Track" : profile.track}
             </Badge>
           )}
@@ -58,8 +58,8 @@ export function ProfileCard({ profile }: { profile: ProfileCardData }) {
             </p>
           )}
            {profile.cohort_number && (
-            <Badge variant="secondary" className="flex items-center gap-2 mb-1 w-fit text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700">
-              <Users className="h-3 w-3" />
+            <Badge variant="secondary" className="bg-[#FF6445]/10 text-[#FF6445] dark:bg-[#FF6445]/20 dark:text-[#FF6445] px-3 py-1 rounded-full">
+              <Users className="h-3 w-3 mr-2" />
               {profile.cohort_number}
             </Badge>
           )}

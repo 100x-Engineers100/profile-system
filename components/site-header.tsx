@@ -12,6 +12,7 @@ import { supabase } from "@/lib/supabase";
 import { NotificationsDropdown } from "@/components/notifications-dropdown";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Suspense } from "react";
+import Image from "next/image";
 
 export function SiteHeader() {
   const { user } = useAuth();
@@ -43,12 +44,10 @@ export function SiteHeader() {
                 <nav className="flex flex-col gap-4">
                   <Link
                     href="/"
-                    className="text-lg font-semibold text-orange-500"
+                    className="text-lg font-semibold text-primary-orange"
                     onClick={() => setIsOpen(false)}
                   >
-                    <span className="font-bold text-black">100</span>
-                    <span className="text-orange-500">x</span>
-                    <span className="text-black">Engineers</span>
+                    <img src="/100xEngineers-black.svg" alt="100xEngineers" className="h-6" />
                   </Link>
                   <Link
                     href="/applications"
@@ -87,9 +86,7 @@ export function SiteHeader() {
             </Sheet>
           </div>
           <Link href="/" className="text-2xl">
-            <span className="font-bold text-black">100</span>
-            <span className="text-orange-500">x</span>
-            <span className="text-black">Engineers</span>
+            <Image src="/100xEngineers-black.svg" alt="100xEngineers" width={200} height={200} />
           </Link>
         </div>
         {/* Right side - Navigation and Actions */}
@@ -134,7 +131,7 @@ export function SiteHeader() {
               </Button>
               {/* <Button
                 size="sm"
-                className="bg-orange-500 hover:bg-orange-500/90 text-white"
+                className="bg-primary-orange hover:bg-primary-orange/90 text-white"
                 onClick={() => router.push("/register")}
               >
                 Register

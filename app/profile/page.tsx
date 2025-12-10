@@ -700,7 +700,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto">
         <Card className="flex flex-col md:flex-row items-center gap-6 p-8 mb-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
-          <Avatar className="h-32 w-32 border-4 border-orange-500 dark:border-orange-400 shadow-md">
+          <Avatar className="h-32 w-32 border-4 border-[#FF6445] dark:border-[#FF6445] shadow-md">
             <AvatarImage
               className="rounded-full object-cover aspect-square"
               src={displayProfile?.avatar_url || ""}
@@ -722,7 +722,7 @@ export default function ProfilePage() {
                   variant="outline"
                   size="sm"
                   onClick={() => setIsEditing(true)}
-                  className="mt-2 md:mt-0 text-orange-600 border-orange-600 hover:bg-orange-50 dark:text-orange-400 dark:border-orange-400 dark:hover:bg-gray-700"
+                  className="mt-2 md:mt-0 text-[#FF6445] border-[#FF6445] hover:bg-[#FF6445]/5 dark:text-[#FF6445] dark:border-[#FF6445] dark:hover:bg-gray-700"
                 >
                   <Pencil className="h-4 w-4 mr-2" />
                   Edit Profile
@@ -730,7 +730,7 @@ export default function ProfilePage() {
               )}
             </div>
             <p className="text-gray-600 dark:text-gray-400 flex items-center justify-center md:justify-start gap-2 text-lg">
-              <Mail className="h-5 w-5 text-orange-500" />
+              <Mail className="h-5 w-5 text-[#FF6445]" />
               {displayProfile?.email}
               {!isEditing && (
                 <Badge
@@ -744,7 +744,7 @@ export default function ProfilePage() {
             {!isEditing && (
               <div className="flex flex-wrap justify-center md:justify-start gap-x-4 gap-y-2 text-gray-700 dark:text-gray-300 text-sm">
                 {displayProfile?.designation && (
-                  <Badge variant="secondary" className="flex items-center gap-2 bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 px-3 py-1 rounded-full">
+                  <Badge variant="secondary" className="flex items-center gap-2 bg-[#FF6445]/10 text-[#FF6445] dark:bg-[#FF6445]/20 dark:text-[#FF6445] px-3 py-1 rounded-full">
                     <Briefcase className="h-4 w-4" />
                     {displayProfile.designation}
                   </Badge>
@@ -819,7 +819,7 @@ export default function ProfilePage() {
                   <X className="h-4 w-4 mr-2" />
                   Cancel
                 </Button>
-                <Button size="sm" onClick={handleSaveProfile} className="bg-orange-600 hover:bg-orange-700 text-white dark:bg-orange-500 dark:hover:bg-orange-600">
+                <Button size="sm" onClick={handleSaveProfile} className="bg-[#FF6445] hover:bg-[#FF6445]/90 text-white dark:bg-[#FF6445] dark:hover:bg-[#FF6445]/90">
                   <Save className="h-4 w-4 mr-2" />
                   Save Changes
                 </Button>
@@ -1029,7 +1029,7 @@ export default function ProfilePage() {
               >
                 Cancel
               </Button>
-              <Button type="submit" className="bg-orange-600 hover:bg-orange-700 text-white dark:bg-orange-500 dark:hover:bg-orange-600">
+              <Button type="submit" className="bg-[#FF6445] hover:bg-[#FF6445]/90 text-white dark:bg-[#FF6445] dark:hover:bg-[#FF6445]/90">
                 <Save className="h-4 w-4 mr-2" />
                 Save Changes
               </Button>
@@ -1042,7 +1042,7 @@ export default function ProfilePage() {
                 {displayProfile?.bio && (
                   <Card className="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                      <Info className="h-6 w-6 mr-3 text-orange-500" />
+                      <Info className="h-6 w-6 mr-3 text-[#FF6445]" />
                       About Me
                     </h2>
                     <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base">{displayProfile.bio}</p>
@@ -1052,12 +1052,12 @@ export default function ProfilePage() {
                 {displayProfile?.skills && (
                   <Card className="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                      <Lightbulb className="h-6 w-6 mr-3 text-orange-500" />
+                      <Lightbulb className="h-6 w-6 mr-3 text-[#FF6445]" />
                       Skills
                     </h2>
                     <div className="flex flex-wrap gap-3">
                       {displayProfile.skills.split(",").map((skill, index) => (
-                        <Badge key={index} variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 px-4 py-2 rounded-full text-base font-medium transition-all duration-200 hover:scale-105">
+                        <Badge key={index} variant="secondary" className="bg-[#FF6445]/10 text-[#FF6445] dark:bg-[#FF6445]/20 dark:text-[#FF6445] px-4 py-2 rounded-full text-base font-medium transition-all duration-200 hover:scale-105">
                           {skill.trim()}
                         </Badge>
                       ))}
@@ -1072,21 +1072,21 @@ export default function ProfilePage() {
                     <TabsTrigger
                       value="applications"
                       onClick={() => setActiveMainTab("applications")}
-                      className="data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-orange-600 dark:data-[state=active]:text-white rounded-md px-4 py-2 text-base font-medium transition-all"
+                      className="data-[state=active]:bg-[#FF6445] data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-[#FF6445] dark:data-[state=active]:text-white rounded-md px-4 py-2 text-base font-medium transition-all"
                     >
                       Applications
                     </TabsTrigger>
                     <TabsTrigger
                       value="progress"
                       onClick={() => setActiveMainTab("progress")}
-                      className="data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-orange-600 dark:data-[state=active]:text-white rounded-md px-4 py-2 text-base font-medium transition-all"
+                      className="data-[state=active]:bg-[#FF6445] data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-[#FF6445] dark:data-[state=active]:text-white rounded-md px-4 py-2 text-base font-medium transition-all"
                     >
                       Progress
                     </TabsTrigger>
                      <TabsTrigger
                       value="analytics"
                       onClick={() => setActiveMainTab("analytics")}
-                      className="data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-orange-600 dark:data-[state=active]:text-white rounded-md px-4 py-2 text-base font-medium transition-all"
+                      className="data-[state=active]:bg-[#FF6445] data-[state=active]:text-white data-[state=active]:shadow-sm dark:data-[state=active]:bg-[#FF6445] dark:data-[state=active]:text-white rounded-md px-4 py-2 text-base font-medium transition-all"
                     >
                       Analytics
                     </TabsTrigger>
@@ -1164,7 +1164,7 @@ export default function ProfilePage() {
                   {overallAttendancePercentage !== null && (
                     <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
                       <p className="text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                        <Percent className="h-5 w-5 text-orange-500" />
+                        <Percent className="h-5 w-5 text-[#FF6445]" />
                         Overall Attendance Rate:
                       </p>
                       <span className="font-semibold text-lg text-gray-900 dark:text-white">{overallAttendancePercentage}%</span>

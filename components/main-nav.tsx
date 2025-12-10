@@ -50,7 +50,7 @@ export function MainNav({isAuthenticated}: {isAuthenticated: boolean}) {
           key={route.href}
           href={route.href}
           className={cn(
-            "text-sm font-medium transition-colors hover:text-orange-500",
+            "text-sm font-medium transition-colors hover:text-[#FF6445]",
             pathname === route.href
               ? "text-foreground"
               : "text-muted-foreground"

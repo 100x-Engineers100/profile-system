@@ -911,7 +911,7 @@ export default function ApplicationPage() {
           <div className="p-6">
             {/* Header */}
             <div className="flex justify-between items-start mb-4 gap-4">
-              <h1 className="text-3xl font-bold">{application.title}</h1>
+              <h1 className="text-3xl font-bold text-[#FF6445]">{application.title}</h1>
 
               <div className="flex items-center gap-2">
                 {application.creator?.user_id && (
@@ -1023,12 +1023,12 @@ export default function ApplicationPage() {
                 size="sm"
                 onClick={handleStar}
                 className={`gap-2 ${
-                  application.isStarred ? "text-orange-500" : ""
+                  application.isStarred ? "text-[#FF6445]" : ""
                 }`}
               >
                 <Star
                   className={`h-4 w-4 ${
-                    application.isStarred ? "fill-orange-500" : ""
+                    application.isStarred ? "fill-[#FF6445]" : ""
                   }`}
                 />
                 {application.stars}

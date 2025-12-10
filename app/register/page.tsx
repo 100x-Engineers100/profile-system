@@ -98,7 +98,7 @@ export default function RegisterPage() {
     <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <Card className="w-full max-w-md p-6">
-        <h1 className="text-2xl font-bold text-center mb-6">Register</h1>
+        <h1 className="text-2xl font-semibold text-[#FF6445]">Register</h1>
 
         <form onSubmit={handleEmailSignUp} className="space-y-4">
           <div className="space-y-2">
@@ -161,7 +161,7 @@ export default function RegisterPage() {
             />
           </div>
 
-          <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-500/90 text-white" disabled={isLoading}>
+          <Button type="submit" className="w-full bg-[#FF6445] hover:bg-[#FF6445]/90 text-white" disabled={isLoading}>
             {isLoading ? "Creating account..." : "Create Account"}
           </Button>
         </form>
@@ -169,7 +169,7 @@ export default function RegisterPage() {
         <p className="text-center mt-4 text-sm text-muted-foreground">
           Already have an account?{" "}
           <span
-            className="text-orange-500 cursor-pointer hover:underline"
+            className="text-[#FF6445] cursor-pointer hover:underline"
             onClick={() => router.push("/login")}
           >
             Login

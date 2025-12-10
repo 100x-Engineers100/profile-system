@@ -86,29 +86,28 @@ export default function NetworkPage() {
     <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-        <h1 className="text-4xl font-extrabold mb-8 text-gray-900 dark:text-white text-center">Explore Our Network</h1>
+        <h1 className="text-4xl font-extrabold mb-8 text-[#FF6445] dark:text-white text-center">Explore Our Network</h1>
 
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 space-y-4 md:space-y-0 md:space-x-4">
           <div className="flex space-x-3">
             <button
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${activeTab === 'members' ? 'bg-orange-500 text-white shadow-md' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${activeTab === 'members' ? 'bg-[#FF6445] text-white hover:bg-[#FF6445]/90 shadow-md' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
               onClick={() => setActiveTab('members')}
             >
               Members
             </button>
-            {/* <button
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${activeTab === 'mentors' ? 'bg-orange-500 text-white shadow-md' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}
+            {/* <button className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${activeTab === 'mentors' ? 'bg-[#FF6445] text-white shadow-md' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'}`}}}}}
               onClick={() => setActiveTab('mentors')}
             >
               Mentors
             </button> */}
             <Select onValueChange={setSelectedCohort} value={selectedCohort}>
-              <SelectTrigger id="cohort-filter" className="w-[180px] rounded-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+              <SelectTrigger id="cohort-filter" className="w-[180px] rounded-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-[#FF6445]">
                 <SelectValue placeholder="All Cohorts" />
               </SelectTrigger>
               <SelectContent className="bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
                 {cohorts.map(cohort => (
-                  <SelectItem key={cohort} value={cohort}>
+                  <SelectItem key={cohort} value={cohort} className={cohort === 'all' ? 'focus:bg-[#FF6445] focus:text-white' : ''}>
                     {cohort === 'all' ? 'All Cohorts' : cohort}
                   </SelectItem>
                 ))}
@@ -119,7 +118,7 @@ export default function NetworkPage() {
             <Input
               type="text"
               placeholder="Search profiles..."
-              className="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#FF6445] dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />

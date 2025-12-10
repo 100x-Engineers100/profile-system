@@ -276,7 +276,7 @@ export default function UserProfilePage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
       <div className="max-w-7xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
         <div className="flex flex-col md:flex-row items-center gap-8 pb-8 mb-8 border-b border-gray-200 dark:border-gray-700">
-          <Avatar className="h-32 w-32 border-4 border-orange-500 shadow-xl">
+          <Avatar className="h-32 w-32 border-4 border-[#FF6445] shadow-xl">
             <AvatarImage
               className="rounded-full object-cover"
               src={displayProfile?.avatar_url || ""}
@@ -290,9 +290,9 @@ export default function UserProfilePage() {
 
           <div className="flex-1 space-y-3 text-center md:text-left">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-3">
-              <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white">
-                {displayProfile?.name || displayProfile?.email?.split("@")[0]}
-              </h1>
+            <h1 className="text-4xl font-extrabold text-[#FF6445]">
+              {displayProfile?.name || displayProfile?.email?.split("@")[0]}
+            </h1>
               {loggedInUserProfile && loggedInUserProfile.id !== displayProfile?.id && (
                 <>
                   {loggedInUserProfile?.role === 'user' && displayProfile?.linkedIn &&
@@ -302,7 +302,7 @@ export default function UserProfilePage() {
                       <Button
                         variant="default"
                         size="sm"
-                        className="mt-2 md:mt-0 rounded-full bg-orange-500 text-white hover:bg-orange-600"
+                        className="mt-2 md:mt-0 rounded-full bg-[#FF6445] text-white hover:bg-[#FF6445]/90"
                       >
                         Connect
                       </Button>
@@ -311,7 +311,7 @@ export default function UserProfilePage() {
                     <Button
                       variant="default"
                       size="sm"
-                      className="mt-2 md:mt-0 rounded-full bg-orange-500 text-white hover:bg-orange-600"
+                      className="mt-2 md:mt-0 rounded-full bg-[#FF6445] text-white hover:bg-[#FF6445]/90"
                       onClick={() => {
                         window.location.href = 'mailto:example@example.com?subject=Connect%20Request';
                       }}
@@ -415,7 +415,7 @@ export default function UserProfilePage() {
             <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Skills</h2>
             <div className="flex flex-wrap gap-3">
               {displayProfile.skills.split(",").map((skill, index) => (
-                <Badge key={index} className="px-4 py-2 rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-base font-medium">
+                <Badge key={index} className="px-4 py-2 rounded-full bg-[#FF6445]/10 text-[#FF6445] dark:bg-[#FF6445]/20 dark:text-[#FF6445] text-base font-medium">
                   {skill.trim()}
                 </Badge>
               ))}
@@ -436,7 +436,7 @@ export default function UserProfilePage() {
           <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Skills</h2>
           <div className="flex flex-wrap gap-3">
             {displayProfile.skills.split(",").map((skill, index) => (
-              <Badge key={index} className="px-4 py-2 rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-base font-medium">
+              <Badge key={index} className="px-4 py-2 rounded-full bg-[#FF6445]/10 text-[#FF6445] dark:bg-[#FF6445]/20 dark:text-[#FF6445] text-base font-medium">
                 {skill.trim()}
               </Badge>
             ))}
@@ -455,14 +455,14 @@ export default function UserProfilePage() {
               {/* <TabsList className="grid w-full grid-cols-2 bg-gray-100 dark:bg-gray-700 rounded-full p-1">
                 <TabsTrigger
                   value="my"
-                  className={`rounded-full text-sm font-medium transition-all duration-200 ${activeTab === 'my' ? 'bg-orange-500 text-white shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
+                  className={`rounded-full text-sm font-medium transition-all duration-200 ${activeTab === 'my' ? 'bg-[#FF6445] text-white shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}}
                   onClick={() => setActiveTab("my")}
                 >
                   My Applications
                 </TabsTrigger>
                 <TabsTrigger
                   value="liked"
-                  className={`rounded-full text-sm font-medium transition-all duration-200 ${activeTab === 'liked' ? 'bg-orange-500 text-white shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
+                  className={`rounded-full text-sm font-medium transition-all duration-200 ${activeTab === 'liked' ? 'bg-[#FF6445] text-white shadow-md' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}}
                   onClick={() => setActiveTab("liked")}
                 >
                   Liked Applications

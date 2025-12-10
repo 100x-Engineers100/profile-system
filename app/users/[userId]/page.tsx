@@ -127,7 +127,7 @@ export default function UserProfilePage() {
           <div className="p-6">
             <div className="flex justify-between items-start">
               <div>
-                <h1 className="text-2xl font-bold">{profile.name}</h1>
+                <h1 className="text-3xl font-bold text-[#FF6445]">{profile.name}</h1>
                 {profile.public_email && (
                   <p className="text-muted-foreground mt-2">
                     <span className="font-medium">Email:</span> {profile.email}
@@ -178,8 +178,8 @@ export default function UserProfilePage() {
                           <p className="font-semibold text-base line-clamp-1 group-hover:text-primary">
                             {app.title}
                           </p>
-                          <div className="flex items-center gap-1 text-sm text-orange-500">
-                            <Star className="h-4 w-4 fill-orange-500" />
+                          <div className="flex items-center gap-1 text-sm text-[#FF6445]">
+                            <Star className="h-4 w-4 fill-[#FF6445]" />
                             <span>{app.stars}</span>
                           </div>
                         </div>
@@ -207,7 +207,7 @@ export default function UserProfilePage() {
                         </p>
 
                         <Button
-                          className="w-full mt-auto bg-orange-500/10 text-orange-500 hover:bg-orange-500/20"
+                          className="w-full mt-auto bg-[#FF6445]/10 text-[#FF6445] hover:bg-[#FF6445]/20"
                           asChild
                         >
                           <Link href={`/applications/${app.id}`}>
