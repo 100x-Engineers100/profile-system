@@ -44,8 +44,8 @@
     "@radix-ui/react-tooltip": "^1.1.2",
     "@supabase/supabase-js": "^2.49.4",
     "@types/node": "20.6.2",
-    "@types/react": "18.2.22",
-    "@types/react-dom": "18.2.7",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
     "ai": "^5.0.68",
@@ -59,20 +59,19 @@
     "dotenv": "^17.2.3",
     "embla-carousel-react": "^8.3.0",
     "eslint": "8.49.0",
-    "eslint-config-next": "13.5.1",
+    "eslint-config-next": "16.0.8",
     "extend": "^3.0.2",
     "input-otp": "^1.2.4",
     "jsonwebtoken": "^9.0.2",
     "llama-cloud-services": "^0.3.6",
     "lucide-react": "^0.446.0",
-    "next": "^15.5.4",
-
+    "next": "16.0.8",
     "next-themes": "^0.3.0",
     "openai": "^5.20.2",
     "postcss": "8.4.30",
-    "react": "18.2.0",
+    "react": "19.2.1",
     "react-day-picker": "^8.10.1",
-    "react-dom": "18.2.0",
+    "react-dom": "19.2.1",
     "react-hook-form": "^7.53.0",
     "react-icons": "^5.5.0",
     "react-markdown": "^10.1.0",
@@ -92,5 +91,9 @@
     "@tailwindcss/typography": "^0.5.16",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/pdf-parse": "^1.1.5"
+  },
+  "overrides": {
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3"
   }
 }
